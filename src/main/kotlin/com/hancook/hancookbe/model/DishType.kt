@@ -13,7 +13,7 @@ class DishType (
     @Column(nullable = false)
     var dishTypeName: String,
 
-    @OneToMany(mappedBy = "dishType", cascade = [CascadeType.ALL], fetch = FetchType.LAZY, targetEntity = Dish::class)
+    @OneToMany(mappedBy = "dishType", cascade = [CascadeType.PERSIST, CascadeType.MERGE], fetch = FetchType.LAZY, targetEntity = Dish::class)
     @JsonManagedReference
     var dishes: List<Dish> = mutableListOf(),
 ) {
