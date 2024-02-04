@@ -2,12 +2,13 @@ package com.hancook.hancookbe.service
 
 import com.hancook.hancookbe.model.Dish
 import com.hancook.hancookbe.repository.DishRepository
+import jakarta.transaction.Transactional
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.PathVariable
 
 
 @Service
+@Transactional
 class DishServiceImpl(private val dishRepository: DishRepository) : DishService {
 
     override fun getAllDishes(): List<Dish> {
@@ -34,11 +35,11 @@ class DishServiceImpl(private val dishRepository: DishRepository) : DishService 
     }
 
     override fun deleteDish(id: Long): Boolean {
-        return try {
+        return if (dishRepository.existsById(id)) {
             dishRepository.deleteById(id)
             true // Deletion successful
-        } catch (e: EmptyResultDataAccessException) {
-            false // DishType with the given ID not found
+        } else {
+            false // Dish with the given ID not found
         }
     }
 }

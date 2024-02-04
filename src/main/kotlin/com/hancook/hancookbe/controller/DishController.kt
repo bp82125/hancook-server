@@ -7,43 +7,52 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/dish")
+@RequestMapping("/api/v1/dish")
 class DishController(private val dishServiceImpl: DishServiceImpl) {
 
     @GetMapping
-    fun getAllDishes(): List<Dish> {
-        return dishServiceImpl.getAllDishes()
+    fun getAllDishes(): ResponseEntity<Map<String, Any>> {
+        val dishes = dishServiceImpl.getAllDishes()
+        return ResponseEntity.ok(mapOf("data" to dishes))
     }
 
     @GetMapping("/{id}")
-    fun getDishById(@PathVariable id: Long): ResponseEntity<Dish> {
+    fun getDishById(@PathVariable id: Long): ResponseEntity<Map<String, Any>> {
         val dish = dishServiceImpl.getDishById(id)
         return if (dish != null) {
-            ResponseEntity.ok(dish)
+            ResponseEntity.ok(mapOf("data" to dish))
         } else {
-            ResponseEntity.notFound().build()
+            val errorMessage = "Dish with ID $id not found"
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
         }
     }
 
     @PostMapping
-    fun createDish(@RequestBody dish: Dish): ResponseEntity<Dish> {
+    fun createDish(@RequestBody dish: Dish): ResponseEntity<Map<String, Any>> {
         val createdDish = dishServiceImpl.createDish(dish)
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDish)
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapOf("data" to createdDish))
     }
 
     @PutMapping("/{id}")
-    fun updateDish(@PathVariable id: Long, @RequestBody updatedDish: Dish): ResponseEntity<Dish> {
+    fun updateDish(@PathVariable id: Long, @RequestBody updatedDish: Dish): ResponseEntity<Map<String, Any>> {
         val updatedEntity = dishServiceImpl.updateDish(id, updatedDish)
         return if (updatedEntity != null) {
-            ResponseEntity.ok(updatedEntity)
+            ResponseEntity.ok(mapOf("data" to updatedEntity))
         } else {
-            ResponseEntity.notFound().build()
+            val errorMessage = "Dish with ID $id not found"
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
         }
     }
 
     @DeleteMapping("/{id}")
-    fun deleteDish(@PathVariable id: Long): ResponseEntity<Unit> {
-        dishServiceImpl.deleteDish(id)
-        return ResponseEntity.noContent().build()
+    fun deleteDish(@PathVariable id: Long): ResponseEntity<Map<String, Any>> {
+        val deleted = dishServiceImpl.deleteDish(id)
+
+        return if (deleted) {
+            ResponseEntity.noContent().build()
+        } else {
+            val errorMessage = "Dish with ID $id not found"
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
+        }
     }
 }
