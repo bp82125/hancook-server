@@ -31,7 +31,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation('org.springframework.boot:spring-boot-starter-validation')
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(module : "mockito-core")
 	}
@@ -39,6 +42,8 @@ dependencies {
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
 	compileOnly("org.springframework.boot:spring-boot-devtools")
+
+
 }
 
 tasks.withType(KotlinCompile) {

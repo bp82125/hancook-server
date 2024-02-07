@@ -22,7 +22,7 @@ import java.util.*
 
 @SpringBootTest
 @ExtendWith(MockKExtension::class, SpringExtension::class)
-class DishServiceImplTest {
+class DishServiceTest {
 
      @Autowired
      @MockkBean

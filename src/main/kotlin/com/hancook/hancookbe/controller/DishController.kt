@@ -1,58 +1,77 @@
 package com.hancook.hancookbe.controller
 
-import com.hancook.hancookbe.model.Dish
-import com.hancook.hancookbe.service.DishServiceImpl
+import com.hancook.hancookbe.converter.toResponse
+import com.hancook.hancookbe.dto.RequestDishDto
+import com.hancook.hancookbe.dto.ResponseDishDto
+import com.hancook.hancookbe.service.DishService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
+import com.hancook.hancookbe.system.ApiResponse
+import jakarta.validation.Valid
 
 @RestController
-@RequestMapping("/api/v1/dish")
-class DishController(private val dishServiceImpl: DishServiceImpl) {
+@RequestMapping("/api/v1/dishes")
+class DishController(
+    private val dishService: DishService
+) {
 
-    @GetMapping
-    fun getAllDishes(): ResponseEntity<Map<String, Any>> {
-        val dishes = dishServiceImpl.getAllDishes()
-        return ResponseEntity.ok(mapOf("data" to dishes))
+    @GetMapping("", "/")
+    fun getAllDishes(): ResponseEntity<ApiResponse<List<ResponseDishDto>>> {
+        val dishes = dishService.getAllDishes().map { it.toResponse() }
+        return ResponseEntity.ok(ApiResponse(success = true, data = dishes, message = "Found dishes"))
     }
 
     @GetMapping("/{id}")
-    fun getDishById(@PathVariable id: Long): ResponseEntity<Map<String, Any>> {
-        val dish = dishServiceImpl.getDishById(id)
-        return if (dish != null) {
-            ResponseEntity.ok(mapOf("data" to dish))
-        } else {
-            val errorMessage = "Dish with ID $id not found"
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
-        }
+    fun getDishById(@PathVariable id: UUID): ResponseEntity<ApiResponse<ResponseDishDto>> {
+        val dish = dishService.getDishById(id).toResponse()
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                data = dish,
+                message = "Found dish with ID: $id"
+            )
+        )
     }
 
     @PostMapping
-    fun createDish(@RequestBody dish: Dish): ResponseEntity<Map<String, Any>> {
-        val createdDish = dishServiceImpl.createDish(dish)
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapOf("data" to createdDish))
-    }
+    fun createDish(
+        @Valid
+        @RequestBody
+        dishDto: RequestDishDto
+    )
+    : ResponseEntity<ApiResponse<ResponseDishDto>> {
+            val createdDish = dishService.createDish(dishDto)
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(ApiResponse(success = true, data = createdDish.toResponse(), message = "Successfully created a dish"))
+
+        }
 
     @PutMapping("/{id}")
-    fun updateDish(@PathVariable id: Long, @RequestBody updatedDish: Dish): ResponseEntity<Map<String, Any>> {
-        val updatedEntity = dishServiceImpl.updateDish(id, updatedDish)
-        return if (updatedEntity != null) {
-            ResponseEntity.ok(mapOf("data" to updatedEntity))
-        } else {
-            val errorMessage = "Dish with ID $id not found"
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
-        }
-    }
+    fun updateDish(
+        @PathVariable
+        id: UUID,
 
-    @DeleteMapping("/{id}")
-    fun deleteDish(@PathVariable id: Long): ResponseEntity<Map<String, Any>> {
-        val deleted = dishServiceImpl.deleteDish(id)
-
-        return if (deleted) {
-            ResponseEntity.noContent().build()
-        } else {
-            val errorMessage = "Dish with ID $id not found"
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to errorMessage))
-        }
+        @Valid
+        @RequestBody dishDto: RequestDishDto
+    ): ResponseEntity<ApiResponse<ResponseDishDto>> {
+        val updatedDish = dishService.updateDish(id, dishDto).toResponse()
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedDish, message = "Updated success"))
     }
+//
+//    @DeleteMapping("/{id}")
+//    fun deleteDish(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
+//        val isDeleted = dishService.deleteDish(id)
+//
+//        return if (isDeleted) {
+//            ResponseEntity.noContent().build()
+//        } else {
+//            val errorMessage = "Dish with ID $id not found"
+//            ResponseEntity
+//                .status(HttpStatus.NOT_FOUND)
+//                .body(ApiResponse(success = false, error = errorMessage))
+//        }
+//    }
 }

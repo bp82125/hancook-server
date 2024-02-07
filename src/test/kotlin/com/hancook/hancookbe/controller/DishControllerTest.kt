@@ -3,8 +3,7 @@ package com.hancook.hancookbe.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hancook.hancookbe.model.Dish
 import com.hancook.hancookbe.model.DishType
-import com.hancook.hancookbe.service.DishServiceImpl
-import com.hancook.hancookbe.system.StatusCode
+import com.hancook.hancookbe.service.DishService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -21,8 +19,6 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 
 @WebMvcTest(DishController::class)
 @ExtendWith(MockKExtension::class, SpringExtension::class)
@@ -32,7 +28,7 @@ class DishControllerTest {
 
     @Autowired
     @MockkBean
-    lateinit var dishServiceImpl: DishServiceImpl
+    lateinit var dishServiceImpl: DishService
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper

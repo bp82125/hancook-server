@@ -2,19 +2,24 @@ package com.hancook.hancookbe.model
 
 import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.JdbcType
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
+import java.util.UUID
 
 @Entity
 class DishType (
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JdbcType(VarcharJdbcType::class)
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var dishTypeName: String,
 
     @OneToMany(mappedBy = "dishType", cascade = [CascadeType.PERSIST, CascadeType.MERGE], fetch = FetchType.LAZY, targetEntity = Dish::class)
-    @JsonManagedReference
     var dishes: List<Dish> = mutableListOf(),
 ) {
     override fun equals(other: Any?): Boolean {
@@ -33,5 +38,9 @@ class DishType (
         result = 31 * result + dishTypeName.hashCode()
         result = 31 * result + dishes.hashCode()
         return result
+    }
+
+    fun getNumberOfDishes(): Int {
+        return this.dishes.size ?: 0
     }
 }

@@ -2,12 +2,17 @@ package com.hancook.hancookbe.model
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.JdbcType
+import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
+import java.util.*
 
 @Entity
 class Dish (
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JdbcType(VarcharJdbcType::class)
+    var id: UUID? = null,
 
     @Column(nullable = false)
     var dishName: String,
@@ -19,7 +24,6 @@ class Dish (
     var imagePath: String,
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "dish_type_id", nullable = false)
     var dishType: DishType,
 ) {
