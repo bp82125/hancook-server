@@ -1,20 +1,24 @@
 package com.hancook.hancookbe.controller
 
+import com.hancook.hancookbe.converter.toEntity
 import com.hancook.hancookbe.converter.toResponse
 import com.hancook.hancookbe.dto.RequestDishDto
 import com.hancook.hancookbe.dto.ResponseDishDto
 import com.hancook.hancookbe.service.DishService
+import com.hancook.hancookbe.service.DishTypeService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
+import org.springframework.beans.factory.annotation.Autowired
 
 @RestController
 @RequestMapping("/api/v1/dishes")
 class DishController(
-    private val dishService: DishService
+    @Autowired private val dishService: DishService,
+    @Autowired private val dishTypeService: DishTypeService
 ) {
 
     @GetMapping("", "/")
@@ -37,41 +41,44 @@ class DishController(
 
     @PostMapping
     fun createDish(
-        @Valid
-        @RequestBody
-        dishDto: RequestDishDto
-    )
-    : ResponseEntity<ApiResponse<ResponseDishDto>> {
-            val createdDish = dishService.createDish(dishDto)
+        @Valid @RequestBody dishDto: RequestDishDto
+    ): ResponseEntity<ApiResponse<ResponseDishDto>> {
+            val dishType = dishTypeService.getDishTypeById(dishDto.dishTypeId)
+            val dish = dishDto.toEntity(dishType)
+            val createdDish = dishService.createDish(dish)
+            val responseDishDto = createdDish.toResponse()
+
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(ApiResponse(success = true, data = createdDish.toResponse(), message = "Successfully created a dish"))
-
+                    .body(ApiResponse(
+                        success = true,
+                        data = responseDishDto,
+                        message = "Successfully created a dish")
+                    )
         }
 
     @PutMapping("/{id}")
     fun updateDish(
-        @PathVariable
-        id: UUID,
-
-        @Valid
-        @RequestBody dishDto: RequestDishDto
+        @PathVariable id: UUID,
+        @Valid @RequestBody dishDto: RequestDishDto
     ): ResponseEntity<ApiResponse<ResponseDishDto>> {
-        val updatedDish = dishService.updateDish(id, dishDto).toResponse()
-        return ResponseEntity.ok(ApiResponse(success = true, data = updatedDish, message = "Updated success"))
+        val dishType = dishTypeService.getDishTypeById(dishDto.dishTypeId)
+        val dish = dishDto.toEntity(dishType)
+        val updatedDish = dishService.updateDish(id, dish)
+        val responseDishDto = updatedDish.toResponse()
+
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                data = responseDishDto,
+                message = "Updated success"
+            )
+        )
     }
-//
-//    @DeleteMapping("/{id}")
-//    fun deleteDish(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
-//        val isDeleted = dishService.deleteDish(id)
-//
-//        return if (isDeleted) {
-//            ResponseEntity.noContent().build()
-//        } else {
-//            val errorMessage = "Dish with ID $id not found"
-//            ResponseEntity
-//                .status(HttpStatus.NOT_FOUND)
-//                .body(ApiResponse(success = false, error = errorMessage))
-//        }
-//    }
+
+    @DeleteMapping("/{id}")
+    fun deleteDish(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
+        dishService.deleteDish(id)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Dish deleted successfully"))
+    }
 }

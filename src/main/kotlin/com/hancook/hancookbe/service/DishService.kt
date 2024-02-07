@@ -28,27 +28,22 @@ class DishService(
             .orElseThrow { DishNotFoundException("Dish with id $id not found") }
     }
 
-
-    fun createDish(dishDto: RequestDishDto): Dish {
-        val dishType = dishTypeService.getDishTypeById(dishDto.dishTypeId)
-        return dishRepository.save(dishDto.toEntity(dishType))
+    fun createDish(dish: Dish): Dish {
+        return dishRepository.save(dish)
     }
 
-    fun updateDish(id: UUID, updatedDishDto: RequestDishDto): Dish {
-        val dishType = dishTypeService.getDishTypeById(updatedDishDto.dishTypeId)
-        val updatedDish = updatedDishDto.toEntity(dishType).apply { this.id = id }
+    fun updateDish(id: UUID, dish: Dish): Dish {
+        val updatedDish = dish.apply { this.id = id }
         return dishRepository
             .findById(id)
             .map { dishRepository.save(updatedDish) }
             .orElseThrow { DishNotFoundException("Dish with id $id not found") }
     }
 
-    fun deleteDish(id: UUID): Boolean {
-        return if (dishRepository.existsById(id)) {
-            dishRepository.deleteById(id)
-            true // Deletion successful
-        } else {
-            false // Dish with the given ID not found
-        }
+    fun deleteDish(id: UUID) {
+        dishRepository
+            .findById(id)
+            .map { dishRepository.deleteById(id) }
+            .orElseThrow { DishNotFoundException("Dish with id $id not found") }
     }
 }

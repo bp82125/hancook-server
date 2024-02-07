@@ -28,15 +28,43 @@ class DishTypeController(private val dishTypeService: DishTypeService) {
         return ResponseEntity.ok(ApiResponse(success = true, data = responseDishType))
     }
 
+//    @PostMapping
+//    fun createDishType(
+//        @Valid @RequestBody dishTypeDto: RequestDishTypeDto
+//    ): ResponseEntity<ApiResponse<ResponseDishTypeDto>> {
+//        val entity = dishTypeDto.toEntity()
+//        val createdDishType = dishTypeService.createDishType(dishTypeDto)
+//        return ResponseEntity
+//            .status(HttpStatus.CREATED)
+//            .body(ApiResponse(success = true, data = createdDishType.toResponse(), message = "Successfully created a dish type"))
+//    }
+//
+//    @PutMapping("/{id}")
+//    fun updateDishType(
+//        @PathVariable id: UUID,
+//        @Valid @RequestBody dishTypeDto: RequestDishTypeDto
+//    ): ResponseEntity<ApiResponse<ResponseDishTypeDto>> {
+//        val updatedDishType = dishTypeService.updateDishType(id, dishTypeDto).toResponse()
+//        return ResponseEntity.ok(
+//            ApiResponse(
+//                success = true,
+//                data = updatedDishType,
+//                message = "Updated success"
+//            )
+//        )
+//
+//    }
+
     @PostMapping
     fun createDishType(
         @Valid @RequestBody dishTypeDto: RequestDishTypeDto
     ): ResponseEntity<ApiResponse<ResponseDishTypeDto>> {
-        val entity = dishTypeDto.toEntity()
-        val createdDishType = dishTypeService.createDishType(dishTypeDto)
+        val dishType = dishTypeDto.toEntity()
+        val createdDishType = dishTypeService.createDishType(dishType)
+        val responseDishTypeDto = createdDishType.toResponse()
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(ApiResponse(success = true, data = createdDishType.toResponse(), message = "Successfully created a dish type"))
+            .body(ApiResponse(success = true, data = responseDishTypeDto, message = "Successfully created a dish type"))
     }
 
     @PutMapping("/{id}")
@@ -44,26 +72,22 @@ class DishTypeController(private val dishTypeService: DishTypeService) {
         @PathVariable id: UUID,
         @Valid @RequestBody dishTypeDto: RequestDishTypeDto
     ): ResponseEntity<ApiResponse<ResponseDishTypeDto>> {
-        val updatedDishType = dishTypeService.updateDishType(id, dishTypeDto).toResponse()
+        val dishType = dishTypeDto.toEntity()
+        val updatedDishType = dishTypeService.updateDishType(id, dishType)
+        val responseDishTypeDto = updatedDishType.toResponse()
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
-                data = updatedDishType,
+                data = responseDishTypeDto,
                 message = "Updated success"
             )
         )
 
     }
-//
-//    @DeleteMapping("/{id}")
-//    fun deleteDishType(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
-//        val isDeleted = dishTypeService.deleteDishType(id)
-//
-//        return if (isDeleted) {
-//            ResponseEntity.noContent().build()
-//        } else {
-//            val errorMessage = "DishType with ID $id not found"
-//            ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse(success = false, error = errorMessage))
-//        }
-//    }
+
+    @DeleteMapping("/{id}")
+    fun deleteDishType(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
+        dishTypeService.deleteDishType(id)
+        return ResponseEntity.ok(ApiResponse(success = true, message = "Dish type deleted successfully"))
+    }
 }

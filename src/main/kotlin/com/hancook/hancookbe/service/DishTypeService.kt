@@ -23,25 +23,22 @@ class DishTypeService (@Autowired private val dishTypeRepository: DishTypeReposi
             .orElseThrow { DishTypeNotFoundException("Dish type with id $id not found") }
     }
 
-    fun createDishType(dishTypeDto: RequestDishTypeDto): DishType {
-        val dishType = dishTypeDto.toEntity()
+    fun createDishType(dishType: DishType): DishType {
         return dishTypeRepository.save(dishType)
     }
 
-    fun updateDishType(id: UUID, dishTypeDto: RequestDishTypeDto): DishType {
-        val updatedDishType = dishTypeDto.toEntity().apply { this.id = id }
+    fun updateDishType(id: UUID, dishType: DishType): DishType {
+        val updatedDishType = dishType.apply { this.id = id }
         return dishTypeRepository
             .findById(id)
             .map { dishTypeRepository.save(updatedDishType) }
             .orElseThrow{ DishTypeNotFoundException("Dish type with id $id not found") }
     }
 
-    fun deleteDishType(id: UUID): Boolean {
-        return if (dishTypeRepository.existsById(id)) {
-            dishTypeRepository.deleteById(id)
-            true // Deletion successful
-        } else {
-            false // Dish with the given ID not found
-        }
+    fun deleteDishType(id: UUID) {
+        dishTypeRepository
+            .findById(id)
+            .map { dishTypeRepository.deleteById(id) }
+            .orElseThrow{ DishTypeNotFoundException("Dish type with id $id not found") }
     }
 }
