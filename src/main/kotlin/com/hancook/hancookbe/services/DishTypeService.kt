@@ -4,7 +4,7 @@ import com.hancook.hancookbe.converters.toEntity
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestDishTypeDto
 import com.hancook.hancookbe.dtos.ResponseDishTypeDto
-import com.hancook.hancookbe.repositoríe.DishTypeRepository
+import com.hancook.hancookbe.repositories.DishTypeRepository
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
-@RequestMapping("/dishTypes")
+@RequestMapping("\${api.endpoint.base-url}/dishTypes")
 class DishTypeController(
     @Autowired private val dishTypeService: DishTypeService
 ) {

@@ -5,7 +5,7 @@ import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestPositionDto
 import com.hancook.hancookbe.dtos.ResponsePositionDto
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
-import com.hancook.hancookbe.repositoríe.PositionRepository
+import com.hancook.hancookbe.repositories.PositionRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.util.UUID

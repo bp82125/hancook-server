@@ -4,6 +4,8 @@ import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -26,5 +28,13 @@ class ExceptionHandlerAdvice {
         return ResponseEntity
             .badRequest()
             .body(ApiResponse(success = false, data = errorsMap, message = "Provided arguments are invalid, see data for details."))
+    }
+
+    @ExceptionHandler(value = [UsernameNotFoundException::class, BadCredentialsException::class])
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAuthenicationException(ex: Exception) : ResponseEntity<ApiResponse<Map<String, String>>>{
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse(success = false, message = "Username or password is incorrect."))
     }
 }

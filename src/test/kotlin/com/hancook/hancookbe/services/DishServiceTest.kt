@@ -2,7 +2,7 @@ package com.hancook.hancookbe.services
 
 import com.hancook.hancookbe.models.Dish
 import com.hancook.hancookbe.models.DishType
-import com.hancook.hancookbe.repositoríe.DishRepository
+import com.hancook.hancookbe.repositories.DishRepository
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 
@@ -42,7 +42,7 @@ class DishServiceTest {
     fun `getDishById should return the dish when ID is found`() {
         // Given
         val a = Dish(
-            id = 1,
+            id = UUID.randomUUID(),
             dishName = "Lau ga",
             price = 6000000,
             imagePath = "/abc",

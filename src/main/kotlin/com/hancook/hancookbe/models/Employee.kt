@@ -30,8 +30,7 @@ class Employee(
     @JoinColumn(name = "position_id")
     var position: Position,
 
-    @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "employee", cascade = [CascadeType.ALL])
     var account: Account?
 ) {
 

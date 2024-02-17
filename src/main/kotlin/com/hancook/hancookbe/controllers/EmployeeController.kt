@@ -13,7 +13,7 @@ import java.util.*
 
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("\${api.endpoint.base-url}/employees")
 class EmployeeController(
     @Autowired private val employeeService: EmployeeService
 ) {

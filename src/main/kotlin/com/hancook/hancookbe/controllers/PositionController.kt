@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/positions")
+@RequestMapping("\${api.endpoint.base-url}/positions")
 class PositionController(private val positionService: PositionService) {
 
     @GetMapping("", "/")

@@ -8,6 +8,7 @@ import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/accounts")
-class AccountController(@Autowired private val accountService: AccountService) {
+@RequestMapping("\${api.endpoint.base-url}/accounts")
+class AccountController(
+    @Autowired private val accountService: AccountService,
+) {
 
     @GetMapping("", "/")
     fun getAllAccounts(): ResponseEntity<ApiResponse<List<ResponseAccountDto>>>{

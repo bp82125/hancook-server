@@ -12,7 +12,7 @@ import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 
 @RestController
-@RequestMapping("/dishes")
+@RequestMapping("\${api.endpoint.base-url}/dishes")
 class DishController(
     @Autowired private val dishService: DishService,
 ) {

@@ -5,9 +5,9 @@ import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestEmployeeDto
 import com.hancook.hancookbe.dtos.ResponseEmployeeDto
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
-import com.hancook.hancookbe.repositoríe.AccountRepository
-import com.hancook.hancookbe.repositoríe.EmployeeRepository
-import com.hancook.hancookbe.repositoríe.PositionRepository
+import com.hancook.hancookbe.repositories.AccountRepository
+import com.hancook.hancookbe.repositories.EmployeeRepository
+import com.hancook.hancookbe.repositories.PositionRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

@@ -1,4 +1,4 @@
-package com.hancook.hancookbe.repositoríe
+package com.hancook.hancookbe.repositories
 
 import com.hancook.hancookbe.models.Position
 import org.springframework.data.jpa.repository.JpaRepository
