@@ -23,6 +23,7 @@ class DishTypeController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = dishTypes,
                 message = "Found dish types"
             )
@@ -35,6 +36,7 @@ class DishTypeController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = responseDishType,
                 message = "Found a dish type"
             )
@@ -51,6 +53,7 @@ class DishTypeController(
             .body(
                 ApiResponse(
                     success = true,
+                    statusCode = HttpStatus.CREATED.value(),
                     data = responseDishType,
                     message = "Successfully created a dish type"
                 )
@@ -66,6 +69,7 @@ class DishTypeController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = responseDishType,
                 message = "Updated success"
             )
@@ -76,6 +80,6 @@ class DishTypeController(
     @DeleteMapping("/{id}")
     fun deleteDishType(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
         dishTypeService.deleteDishType(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Dish type has been deleted successfully"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), message = "Dish type has been deleted successfully"))
     }
 }

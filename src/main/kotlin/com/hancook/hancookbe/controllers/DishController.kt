@@ -20,7 +20,13 @@ class DishController(
     @GetMapping("", "/")
     fun getAllDishes(): ResponseEntity<ApiResponse<List<ResponseDishDto>>> {
         val dishes = dishService.getAllDishes()
-        return ResponseEntity.ok(ApiResponse(success = true, data = dishes, message = "Found dishes"))
+        return ResponseEntity.ok(
+            ApiResponse(success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = dishes,
+                message = "Found dishes"
+            )
+        )
     }
 
     @GetMapping("/{id}")
@@ -29,6 +35,7 @@ class DishController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = dish,
                 message = "Found dish with ID: $id"
             )
@@ -45,6 +52,7 @@ class DishController(
                 .body(
                     ApiResponse(
                         success = true,
+                        statusCode = HttpStatus.CREATED.value(),
                         data = responseDish,
                         message = "Successfully created a dish"
                     )
@@ -60,6 +68,7 @@ class DishController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = responseDish,
                 message = "Updated success"
             )
@@ -69,6 +78,10 @@ class DishController(
     @DeleteMapping("/{id}")
     fun deleteDish(@PathVariable id: UUID): ResponseEntity<ApiResponse<Unit>> {
         dishService.deleteDish(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Dish has been deleted successfully"))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                message = "Dish has been deleted successfully"))
     }
 }

@@ -1,5 +1,6 @@
 package com.hancook.hancookbe.converters
 
+import com.hancook.hancookbe.dtos.AccountPrinciple
 import com.hancook.hancookbe.dtos.RequestAccountDto
 import com.hancook.hancookbe.dtos.ResponseAccountDto
 import com.hancook.hancookbe.models.Account
@@ -31,6 +32,5 @@ fun Account.toResponse(): ResponseAccountDto {
 }
 
 fun Account.toUserDetails(): UserDetails {
-    val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority(role.name))
-    return User(this.username, this.password, this.enabled, true, true, true, authorities)
+    return AccountPrinciple(this)
 }

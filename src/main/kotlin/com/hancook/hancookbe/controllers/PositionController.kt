@@ -27,6 +27,7 @@ class PositionController(private val positionService: PositionService) {
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = responsePositions,
                 message = "Found positions"
             )
@@ -39,6 +40,7 @@ class PositionController(private val positionService: PositionService) {
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = responsePosition,
                 message = "Found a position"
             )
@@ -56,6 +58,7 @@ class PositionController(private val positionService: PositionService) {
             .body(
                 ApiResponse(
                     success = true,
+                    statusCode = HttpStatus.CREATED.value(),
                     data = createdPosition,
                     message = "Successfully created a position"
                 )
@@ -72,6 +75,7 @@ class PositionController(private val positionService: PositionService) {
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = updatedPosition,
                 message = "Updated success"
             )
@@ -83,6 +87,6 @@ class PositionController(private val positionService: PositionService) {
         @PathVariable id: UUID
     ): ResponseEntity<ApiResponse<Unit>> {
         positionService.deletePosition(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Position has been deleted successfully"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), message = "Position has been deleted successfully"))
     }
 }

@@ -4,12 +4,15 @@ import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import jakarta.validation.ValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AccountStatusException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.security.access.AccessDeniedException
 
 @RestControllerAdvice
 class ExceptionHandlerAdvice {
@@ -19,7 +22,7 @@ class ExceptionHandlerAdvice {
     fun handleElementNotFoundException(ex: ElementNotFoundException) : ResponseEntity<ApiResponse<Map<String, String>>>{
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
-            .body(ApiResponse(success = false, message = ex.message))
+            .body(ApiResponse(success = false, statusCode = HttpStatus.NOT_FOUND.value(), message = ex.message))
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class, ValidationException::class)
@@ -27,14 +30,46 @@ class ExceptionHandlerAdvice {
         val errorsMap = ex.bindingResult.fieldErrors.associate { it.field to it.defaultMessage!! }
         return ResponseEntity
             .badRequest()
-            .body(ApiResponse(success = false, data = errorsMap, message = "Provided arguments are invalid, see data for details."))
+            .body(ApiResponse(success = false, statusCode = HttpStatus.BAD_REQUEST.value(), data = errorsMap, message = "Provided arguments are invalid, see data for details."))
     }
 
     @ExceptionHandler(value = [UsernameNotFoundException::class, BadCredentialsException::class])
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    fun handleAuthenicationException(ex: Exception) : ResponseEntity<ApiResponse<Map<String, String>>>{
+    fun handleAuthenticationException(ex: Exception) : ResponseEntity<ApiResponse<String>> {
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
-            .body(ApiResponse(success = false, message = "Username or password is incorrect."))
+            .body(ApiResponse(success = false, statusCode = HttpStatus.UNAUTHORIZED.value(), data = ex.message ,message = "Username or password is incorrect."))
+    }
+
+    @ExceptionHandler(AccountStatusException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAccountException(ex: AccountStatusException) : ResponseEntity<ApiResponse<String>> {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.UNAUTHORIZED.value(), data = ex.message, message = "User account is abnormal."))
+    }
+
+    @ExceptionHandler(InvalidBearerTokenException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleInvalidBearerTokenException(ex: InvalidBearerTokenException) : ResponseEntity<ApiResponse<String>> {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.UNAUTHORIZED.value(), data = ex.message ,message = "The access token provided is expired, revoked, malformed, invalid for other reasons."))
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleAccessDeniedException(ex: AccessDeniedException) : ResponseEntity<ApiResponse<String>> {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.FORBIDDEN.value(), data = ex.message, message = "No permission."))
+    }
+
+    @ExceptionHandler(Exception::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleOtherException(ex: Exception) : ResponseEntity<ApiResponse<String>> {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value(), data = ex.message ,message = "An internal server error occurs."))
     }
 }

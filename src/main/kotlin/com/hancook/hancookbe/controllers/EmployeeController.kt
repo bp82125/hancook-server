@@ -21,7 +21,7 @@ class EmployeeController(
     @GetMapping("", "/")
     fun getAllEmployees(): ResponseEntity<ApiResponse<List<ResponseEmployeeDto>>> {
         val employees = employeeService.getAllEmployees()
-        return ResponseEntity.ok(ApiResponse(success = true, data = employees, message = "Found employees"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), data = employees, message = "Found employees"))
     }
 
     @GetMapping("/{id}")
@@ -30,6 +30,7 @@ class EmployeeController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = employee,
                 message = "Found employee with ID: $id"
             )
@@ -46,6 +47,7 @@ class EmployeeController(
             .body(
                 ApiResponse(
                     success = true,
+                    statusCode = HttpStatus.CREATED.value(),
                     data = employee,
                     message = "Successfully created an employee"
                 )
@@ -61,6 +63,7 @@ class EmployeeController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = employee,
                 message = "Updated success"
             )
@@ -72,6 +75,6 @@ class EmployeeController(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<Unit>> {
         employeeService.deleteEmployee(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Employee has been deleted successfully"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), message = "Employee has been deleted successfully"))
     }
 }

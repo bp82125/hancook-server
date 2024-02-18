@@ -28,7 +28,7 @@ class AccountController(
     @GetMapping("", "/")
     fun getAllAccounts(): ResponseEntity<ApiResponse<List<ResponseAccountDto>>>{
         val accounts = accountService.findAllAccounts()
-        return ResponseEntity.ok(ApiResponse(success = true, data = accounts, message = "Found accounts"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value() ,data = accounts, message = "Found accounts"))
     }
 
     @GetMapping("/{id}")
@@ -37,6 +37,7 @@ class AccountController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = account,
                 message = "Found account with ID: $id"
             )
@@ -53,6 +54,7 @@ class AccountController(
             .body(
                 ApiResponse(
                     success = true,
+                    statusCode = HttpStatus.CREATED.value(),
                     data = account,
                     message = "Successfully created a dish"
                 )
@@ -68,6 +70,7 @@ class AccountController(
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
+                statusCode = HttpStatus.OK.value(),
                 data = account,
                 message = "Updated success"
             )
@@ -79,6 +82,6 @@ class AccountController(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<Unit>> {
         accountService.deleteAccount(id)
-        return ResponseEntity.ok(ApiResponse(success = true, message = "Account has been deleted successfully"))
+        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), message = "Account has been deleted successfully"))
     }
 }
