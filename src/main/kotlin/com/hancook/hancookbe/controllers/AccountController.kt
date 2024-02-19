@@ -56,7 +56,7 @@ class AccountController(
                     success = true,
                     statusCode = HttpStatus.CREATED.value(),
                     data = account,
-                    message = "Successfully created a dish"
+                    message = "Successfully created an account"
                 )
             )
     }

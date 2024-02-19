@@ -62,7 +62,7 @@ class SecurityConfiguration(
         return http.authorizeHttpRequests {
             it
                 .requestMatchers(HttpMethod.GET, "${this.baseUrl}/dishes/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/employees/**").hasAuthority("ROLE_admin")
+                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/employees/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
         }
             .csrf { it.disable() }
