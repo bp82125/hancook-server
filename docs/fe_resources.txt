@@ -1,0 +1,5 @@
+https://vuejs.org/
+https://router.vuejs.org/
+https://pinia.vuejs.org/
+https://flowbite.com/application-ui/demo/
+https://tailwindcss.com/
