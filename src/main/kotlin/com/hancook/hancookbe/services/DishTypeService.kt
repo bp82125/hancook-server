@@ -4,6 +4,7 @@ import com.hancook.hancookbe.converters.toEntity
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestDishTypeDto
 import com.hancook.hancookbe.dtos.ResponseDishTypeDto
+import com.hancook.hancookbe.exceptions.AssociatedEntitiesException
 import com.hancook.hancookbe.repositories.DishTypeRepository
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import jakarta.transaction.Transactional
@@ -45,9 +46,14 @@ class DishTypeService (
     }
 
     fun deleteDishType(id: UUID) {
-        dishTypeRepository
+        val dishType = dishTypeRepository
             .findById(id)
-            .map { dishTypeRepository.deleteById(id) }
             .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id) }
+
+        if(dishType.dishes.isEmpty()){
+            dishTypeRepository.deleteById(id)
+        }else{
+            throw AssociatedEntitiesException("Dish type", "Dish")
+        }
     }
 }

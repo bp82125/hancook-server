@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
-data class RequestAccountDto(
+data class CreateAccountDto(
     @field:NotEmpty(message = "Username is required")
     val username: String,
 
@@ -17,18 +17,33 @@ data class RequestAccountDto(
     val password: String,
 
     @field:NotNull(message = "Role is required")
-    val role: Role, // Add role field
+    val role: Role,
 
     val enabled: Boolean,
 
     val employeeId: UUID? = null
 )
 
+data class UpdateAccountDto(
+    @field:NotNull(message = "Role is required")
+    val role: Role,
+)
+
+data class UpdatePasswordDto(
+    @field:NotEmpty(message = "Old password is required")
+    val oldPassword: String,
+
+    @field:NotEmpty(message = "New password is required")
+    val newPassword: String,
+)
+
 data class ResponseAccountDto(
     val id: UUID?,
     val username: String,
     val role: Role,
-    val enabled: Boolean
+    val enabled: Boolean,
+    val employeeId: UUID? = null,
+    val employeeName: String?
 )
 
 class AccountPrinciple(private val account: Account) : UserDetails {

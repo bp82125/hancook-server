@@ -1,17 +1,14 @@
 package com.hancook.hancookbe.converters
 
 import com.hancook.hancookbe.dtos.AccountPrinciple
-import com.hancook.hancookbe.dtos.RequestAccountDto
+import com.hancook.hancookbe.dtos.CreateAccountDto
 import com.hancook.hancookbe.dtos.ResponseAccountDto
 import com.hancook.hancookbe.models.Account
 import com.hancook.hancookbe.models.Employee
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
-fun RequestAccountDto.toEntity(id: UUID? = null, employee: Employee? = null): Account {
+fun CreateAccountDto.toEntity(id: UUID? = null, employee: Employee? = null): Account {
     return Account(
         id = id,
         username = this.username,
@@ -27,7 +24,9 @@ fun Account.toResponse(): ResponseAccountDto {
         id = this.id,
         username = this.username,
         enabled = this.enabled,
-        role = this.role
+        role = this.role,
+        employeeId = this.employee?.id,
+        employeeName = this.employee?.name
     )
 }
 

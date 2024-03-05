@@ -64,9 +64,30 @@ class EmployeeService(
     }
 
     fun deleteEmployee(id: UUID) {
-        employeeRepository
+        val employee = employeeRepository
             .findById(id)
-            .map { employeeRepository.deleteById(id) }
             .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id) }
+
+        employee.account?.removeEmployee()
+        employeeRepository.deleteById(id)
+    }
+
+    fun assignAccountToEmployee(employeeId: UUID, accountId: UUID): ResponseEmployeeDto {
+        val account = accountRepository
+            .findById(accountId)
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = accountId) }
+
+        val employee = employeeRepository
+            .findById(employeeId)
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId) }
+
+        if(account.employee != null) {
+            account.employee?.removeAccount(account)
+        }
+
+        employee.account = account
+        account.employee = employee
+
+        return employee.toResponse()
     }
 }

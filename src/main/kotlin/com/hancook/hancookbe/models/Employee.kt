@@ -30,8 +30,9 @@ class Employee(
     @JoinColumn(name = "position_id")
     var position: Position,
 
-    @OneToOne(mappedBy = "employee", cascade = [CascadeType.ALL])
-    var account: Account?
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    var account: Account? = null
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -60,5 +61,10 @@ class Employee(
         return result
     }
 
+    fun removeAccount(account: Account) {
+        this.account?.employee = null
+        this.account = null
+
+    }
 
 }

@@ -13,7 +13,7 @@ class Account(
     @JdbcType(VarcharJdbcType::class)
     val id: UUID?,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var username: String,
 
     @Column(nullable = false)
@@ -24,8 +24,7 @@ class Account(
     @Enumerated(EnumType.STRING)
     var role: Role,
 
-    @OneToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "account", cascade = [CascadeType.ALL])
     var employee: Employee?
 ) {
     override fun equals(other: Any?): Boolean {
@@ -52,5 +51,9 @@ class Account(
         return result
     }
 
+    fun removeEmployee() {
+        this.employee?.account = null
+        this.employee = null
+    }
 
 }

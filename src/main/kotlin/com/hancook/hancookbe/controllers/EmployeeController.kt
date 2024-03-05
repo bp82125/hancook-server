@@ -55,7 +55,7 @@ class EmployeeController(
     }
 
     @PutMapping("/{id}")
-    fun updateAccount(
+    fun updateEmployee(
         @PathVariable id: UUID,
         @Valid @RequestBody requestEmployee: RequestEmployeeDto
     ): ResponseEntity<ApiResponse<ResponseEmployeeDto>> {
@@ -71,10 +71,19 @@ class EmployeeController(
     }
 
     @DeleteMapping("/{id}")
-    fun deleteAccount(
+    fun deleteEmployee(
         @PathVariable id: UUID,
     ): ResponseEntity<ApiResponse<Unit>> {
         employeeService.deleteEmployee(id)
         return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value(), message = "Employee has been deleted successfully"))
+    }
+
+    @PutMapping("/{employeeId}/accounts/{accountId}")
+    fun assignAccountToEmployee(
+        @PathVariable employeeId: UUID,
+        @PathVariable accountId: UUID
+    ): ResponseEntity<ApiResponse<ResponseEmployeeDto>> {
+        val employee = employeeService.assignAccountToEmployee(employeeId, accountId)
+        return ResponseEntity.ok(ApiResponse(success = true, data = employee, statusCode = HttpStatus.OK.value(), message = "Successfully assigned account $accountId to employee $employeeId"))
     }
 }
