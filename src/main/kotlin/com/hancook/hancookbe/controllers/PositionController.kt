@@ -5,6 +5,7 @@ import com.hancook.hancookbe.dtos.ResponsePositionDto
 import com.hancook.hancookbe.services.PositionService
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,7 +20,7 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("\${api.endpoint.base-url}/positions")
-class PositionController(private val positionService: PositionService) {
+class PositionController(@Autowired private val positionService: PositionService) {
 
     @GetMapping("", "/")
     fun getAllPositions(): ResponseEntity<ApiResponse<List<ResponsePositionDto>>> {
