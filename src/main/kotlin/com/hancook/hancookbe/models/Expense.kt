@@ -1,28 +1,31 @@
 package com.hancook.hancookbe.models
 
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcType
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
 import java.time.LocalDateTime
 import java.util.*
 
 @Entity
+@Table(name = "expenses")
 class Expense(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcType(VarcharJdbcType::class)
+    @Column(name = "expense_id")
     val id: UUID?,
 
-    @Column(nullable = false)
+    @Column(name = "expense_name", nullable = false)
     var name: String,
 
-    @Column(nullable = false)
+    @Column(name = "amount", nullable = false)
     var amount: Long,
 
-    @Column
+    @Column(name = "note")
     var note: String,
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     val dateTime: LocalDateTime = LocalDateTime.now(),
 ) {
     override fun equals(other: Any?): Boolean {

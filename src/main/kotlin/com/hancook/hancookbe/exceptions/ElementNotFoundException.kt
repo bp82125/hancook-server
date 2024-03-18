@@ -1,7 +1,5 @@
 package com.hancook.hancookbe.exceptions
 
-import java.util.*
-
-class ElementNotFoundException(objectName: String, id: UUID) : RuntimeException(
+class ElementNotFoundException(objectName: String, id: String) : RuntimeException(
     "$objectName with the ID: $id was not found"
 )

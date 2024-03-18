@@ -41,7 +41,6 @@ class SecurityConfiguration(
 ) {
 
     private lateinit var publicKey: RSAPublicKey
-
     private lateinit var privateKey: RSAPrivateKey
 
     @Value("\${api.endpoint.base-url}")

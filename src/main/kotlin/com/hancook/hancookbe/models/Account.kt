@@ -2,30 +2,36 @@ package com.hancook.hancookbe.models
 
 import com.hancook.hancookbe.enums.Role
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcType
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
 import java.util.UUID
 
 @Entity
+@Table(name = "accounts")
 class Account(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcType(VarcharJdbcType::class)
+    @Column(name = "account_id")
     val id: UUID?,
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username" ,nullable = false, unique = true)
     var username: String,
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     var password: String,
 
+    @Column(name = "enabled")
     var enabled: Boolean = true,
 
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     var role: Role,
 
     @OneToOne(mappedBy = "account", cascade = [CascadeType.ALL])
-    var employee: Employee?
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    var employee: Employee? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

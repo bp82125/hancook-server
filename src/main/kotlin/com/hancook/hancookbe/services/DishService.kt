@@ -28,13 +28,13 @@ class DishService(
         return dishRepository
             .findById(id)
             .map { it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id.toString()) }
     }
 
     fun createDish(requestDish: RequestDishDto): ResponseDishDto {
         val dishType = dishTypeRepository
             .findById(requestDish.dishTypeId)
-            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = requestDish.dishTypeId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = requestDish.dishTypeId.toString()) }
 
         val dish = requestDish.toEntity(dishType = dishType)
         val savedDish = dishRepository.save(dish)
@@ -44,13 +44,13 @@ class DishService(
     fun updateDish(id: UUID, requestDish: RequestDishDto): ResponseDishDto {
         val dishType = dishTypeRepository
             .findById(requestDish.dishTypeId)
-            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = requestDish.dishTypeId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = requestDish.dishTypeId.toString()) }
 
         val dish = requestDish.toEntity(id = id, dishType = dishType)
         val updatedDish = dishRepository
             .findById(id)
             .map { dishRepository.save(dish) }
-            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id.toString()) }
 
         return updatedDish.toResponse()
     }
@@ -59,6 +59,6 @@ class DishService(
         dishRepository
             .findById(id)
             .map { dishRepository.deleteById(id) }
-            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id.toString()) }
     }
 }

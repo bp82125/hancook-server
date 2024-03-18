@@ -1,19 +1,22 @@
 package com.hancook.hancookbe.models
 
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcType
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
 import java.util.UUID
 
 @Entity
+@Table(name = "dish_types")
 class DishType (
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcType(VarcharJdbcType::class)
+    @Column(name = "dish_type_id")
     val id: UUID?,
 
-    @Column(nullable = false)
+    @Column( nullable = false)
     var dishTypeName: String,
 
     @OneToMany(

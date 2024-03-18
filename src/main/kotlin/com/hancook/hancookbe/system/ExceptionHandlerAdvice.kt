@@ -1,9 +1,6 @@
 package com.hancook.hancookbe.system
 
-import com.hancook.hancookbe.exceptions.AssociatedEntitiesException
-import com.hancook.hancookbe.exceptions.ElementNotFoundException
-import com.hancook.hancookbe.exceptions.InvalidPasswordException
-import com.hancook.hancookbe.exceptions.UsernameAlreadyExistsException
+import com.hancook.hancookbe.exceptions.*
 import jakarta.validation.ValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -96,9 +93,23 @@ class ExceptionHandlerAdvice {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ApiResponse(success = false, statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value(), data = ex.message ,message = "An internal server error occurs."))
     }
+
     @ExceptionHandler(AssociatedEntitiesException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
     fun handleAssociatedEntitiesException(ex: Exception): ResponseEntity<ApiResponse<String>> {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ApiResponse(
+                success = false,
+                statusCode = HttpStatus.CONFLICT.value(),
+                data = null,
+                message = ex.message
+            )
+        )
+    }
+
+    @ExceptionHandler(EntityAlreadyAssociatedException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleEntityAlreadyAssociatedException(ex: EntityAlreadyAssociatedException): ResponseEntity<ApiResponse<String>> {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
             ApiResponse(
                 success = false,
