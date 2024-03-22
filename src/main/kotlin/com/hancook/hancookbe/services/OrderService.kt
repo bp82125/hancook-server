@@ -4,6 +4,7 @@ import com.hancook.hancookbe.converters.toEntity
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestOrderDto
 import com.hancook.hancookbe.dtos.ResponseOrderDto
+import com.hancook.hancookbe.exceptions.AssociatedEntityNotFoundException
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import com.hancook.hancookbe.exceptions.EntityAlreadyAssociatedException
 import com.hancook.hancookbe.repositories.EmployeeRepository
@@ -30,6 +31,17 @@ class OrderService(
             .findById(orderId)
             .map { it.toResponse() }
             .orElseThrow { ElementNotFoundException(objectName = "Order", id = orderId.toString()) }
+    }
+
+    fun findOrderByTableId(tableId: UUID): ResponseOrderDto {
+        val table = tableRepository
+            .findById(tableId)
+            .orElseThrow { ElementNotFoundException(objectName = "Table", id = tableId.toString()) }
+
+        val order = table.customerOrder
+            ?: throw AssociatedEntityNotFoundException(entityName = "Order", association = "Table", id = tableId.toString())
+
+        return order.toResponse()
     }
 
     fun createOrder(requestOrderDto: RequestOrderDto): ResponseOrderDto {

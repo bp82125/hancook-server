@@ -16,6 +16,7 @@ fun Table.toResponse(): ResponseTableDto {
     return ResponseTableDto(
         id = this.id,
         name = this.name,
-        state = this.getTableState()
+        state = this.getTableState(),
+        orderId = this.customerOrder?.id
     )
 }

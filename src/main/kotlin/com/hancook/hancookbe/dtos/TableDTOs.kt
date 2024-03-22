@@ -12,5 +12,6 @@ data class RequestTableDto(
 data class ResponseTableDto(
     val id: UUID?,
     val name: String,
-    val state: TableState
+    val state: TableState,
+    val orderId: UUID?
 )

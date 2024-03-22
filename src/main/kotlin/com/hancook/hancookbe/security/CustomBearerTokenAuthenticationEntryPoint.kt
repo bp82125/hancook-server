@@ -21,5 +21,4 @@ class CustomBearerTokenAuthenticationEntryPoint(
     ) {
         resolver.resolveException(request, response, null, authException)
     }
-
 }
