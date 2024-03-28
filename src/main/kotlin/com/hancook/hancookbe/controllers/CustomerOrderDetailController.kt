@@ -2,7 +2,7 @@ package com.hancook.hancookbe.controllers
 
 import com.hancook.hancookbe.dtos.RequestOrderDetailDto
 import com.hancook.hancookbe.dtos.ResponseOrderDetailDto
-import com.hancook.hancookbe.services.OrderDetailService
+import com.hancook.hancookbe.services.CustomerOrderDetailService
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,37 +19,37 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("\${api.endpoint.base-url}/orders")
-class OrderDetailController(
-    @Autowired private val orderDetailService: OrderDetailService
+@RequestMapping("\${api.endpoint.base-url}/tables/orders")
+class CustomerOrderDetailController(
+    @Autowired private val customerOrderDetailService: CustomerOrderDetailService
 ) {
     @GetMapping("/{orderId}/details", "/{orderId}/details/")
-    fun findAllOrderDetailsByOrder(
+    fun findAllDetailsByOrder(
         @PathVariable orderId: UUID
     ): ResponseEntity<ApiResponse<List<ResponseOrderDetailDto>>> {
-        val details = orderDetailService.findAllOrderDetailsByOrder(orderId)
+        val details = customerOrderDetailService.findAllDetailsByOrder(orderId)
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
                 statusCode = HttpStatus.OK.value(),
                 data = details,
-                message = "Found details of order: $orderId"
+                message = "Found details of order with ID: $orderId"
             )
         )
     }
 
     @GetMapping("/{orderId}/details/{dishId}", "/{orderId}/details/{dishId}/")
-    fun findOrderDetailByOrderAndDish(
+    fun findDetailByOrderAndDish(
         @PathVariable orderId: UUID,
         @PathVariable dishId: UUID,
     ): ResponseEntity<ApiResponse<ResponseOrderDetailDto>> {
-        val detail = orderDetailService.findOrderDetailByOrderAndDish(orderId, dishId)
+        val detail = customerOrderDetailService.findDetailByOrderAndDish(orderId, dishId)
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
                 statusCode = HttpStatus.OK.value(),
                 data = detail,
-                message = "Found details of order: $orderId and dish: $dishId"
+                message = "Found details of order with ID $orderId and dish with ID: $dishId"
             )
         )
     }
@@ -60,7 +60,7 @@ class OrderDetailController(
         @PathVariable dishId: UUID,
         @Valid @RequestBody requestOrderDetailDto: RequestOrderDetailDto,
     ): ResponseEntity<ApiResponse<ResponseOrderDetailDto>> {
-        val createdDetail = orderDetailService.createOrderDetail(orderId, dishId, requestOrderDetailDto)
+        val createdDetail = customerOrderDetailService.createOrderDetail(orderId = orderId, dishId, requestOrderDetailDto)
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(
@@ -68,7 +68,7 @@ class OrderDetailController(
                     success = true,
                     statusCode = HttpStatus.CREATED.value(),
                     data = createdDetail,
-                    message = "Successfully created an order detail of order: $orderId and dish: $dishId"
+                    message = "Successfully created a detail of order with ID $orderId and dish with ID: $dishId"
                 )
             )
     }
@@ -79,13 +79,13 @@ class OrderDetailController(
         @PathVariable dishId: UUID,
         @Valid @RequestBody requestOrderDetailDto: RequestOrderDetailDto,
     ): ResponseEntity<ApiResponse<ResponseOrderDetailDto>> {
-        val updatedDetail = orderDetailService.updateOrderDetail(orderId, dishId, requestOrderDetailDto)
+        val updatedDetail = customerOrderDetailService.updateOrderDetail(orderId, dishId, requestOrderDetailDto)
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,
                 statusCode = HttpStatus.OK.value(),
                 data = updatedDetail,
-                message = "Updated success order detail of order: $orderId and dish: $dishId"
+                message = "Successfully updated a detail of order with ID $orderId and dish with ID: $dishId"
             )
         )
     }
@@ -95,7 +95,7 @@ class OrderDetailController(
         @PathVariable orderId: UUID,
         @PathVariable dishId: UUID,
     ): ResponseEntity<ApiResponse<Unit>> {
-        orderDetailService.deleteOrderDetail(orderId, dishId)
+        customerOrderDetailService.deleteOrderDetail(orderId, dishId)
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,

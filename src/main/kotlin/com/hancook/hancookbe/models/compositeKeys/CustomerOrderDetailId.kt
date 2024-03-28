@@ -4,10 +4,9 @@ import com.hancook.hancookbe.models.CustomerOrder
 import com.hancook.hancookbe.models.Dish
 import jakarta.persistence.*
 import java.io.Serializable
-import java.util.UUID
 
 @Embeddable
-class OrderDetailId(
+class CustomerOrderDetailId(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_order_id", referencedColumnName = "customer_order_id")
     var customerOrder: CustomerOrder,

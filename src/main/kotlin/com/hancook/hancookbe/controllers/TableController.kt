@@ -1,9 +1,9 @@
 package com.hancook.hancookbe.controllers
 
 import com.hancook.hancookbe.dtos.RequestTableDto
-import com.hancook.hancookbe.dtos.ResponseOrderDto
+import com.hancook.hancookbe.dtos.ResponseCustomerOrderDto
 import com.hancook.hancookbe.dtos.ResponseTableDto
-import com.hancook.hancookbe.services.OrderService
+import com.hancook.hancookbe.services.CustomerOrderService
 import com.hancook.hancookbe.services.TableService
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
@@ -24,7 +24,7 @@ import java.util.UUID
 @RequestMapping("\${api.endpoint.base-url}/tables")
 class TableController(
     @Autowired private val tableService: TableService,
-    @Autowired private val orderService: OrderService
+    @Autowired private val customerOrderService: CustomerOrderService
 ) {
     @GetMapping("", "/")
     fun findAllTables(): ResponseEntity<ApiResponse<List<ResponseTableDto>>> {
@@ -50,21 +50,6 @@ class TableController(
                 statusCode = HttpStatus.OK.value(),
                 data = table,
                 message = "Found table with ID: $id"
-            )
-        )
-    }
-
-    @GetMapping("/{tableId}/orders", "/{tableId}/orders")
-    fun findOrderByTableId(
-        @PathVariable tableId: UUID
-    ): ResponseEntity<ApiResponse<ResponseOrderDto>> {
-        val order = orderService.findOrderByTableId(tableId)
-        return ResponseEntity.ok(
-            ApiResponse(
-                success = true,
-                statusCode = HttpStatus.OK.value(),
-                data = order,
-                message = "Found order of table with ID: $tableId"
             )
         )
     }

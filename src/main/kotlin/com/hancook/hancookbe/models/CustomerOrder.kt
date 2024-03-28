@@ -27,10 +27,10 @@ class CustomerOrder (
     @OneToMany(
         mappedBy = "id.customerOrder",
         fetch = FetchType.LAZY,
-        cascade = [CascadeType.PERSIST, CascadeType.MERGE],
-        targetEntity = OrderDetail::class
+        cascade = [CascadeType.ALL],
+        targetEntity = CustomerOrderDetail::class
     )
-    var details: List<OrderDetail> = mutableListOf(),
+    var details: List<CustomerOrderDetail> = mutableListOf(),
 
     @Column(name = "placed_time", nullable = false)
     var orderPlacedTime: LocalDateTime,

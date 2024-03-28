@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.AuthenticationException
 
 @RestControllerAdvice
 class ExceptionHandlerAdvice {
@@ -71,6 +72,18 @@ class ExceptionHandlerAdvice {
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(ApiResponse(success = false, statusCode = HttpStatus.UNAUTHORIZED.value(), data = ex.message, message = "Invalid password provided."))
+    }
+
+    @ExceptionHandler(AuthenticationException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<ApiResponse<Unit>> {
+        val responseBody = ApiResponse<Unit>(
+            success = false,
+            statusCode = HttpStatus.UNAUTHORIZED.value(),
+            data = null,
+            message = ex.message ?: "Unauthorized."
+        )
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody)
     }
 
     @ExceptionHandler(UsernameAlreadyExistsException::class)

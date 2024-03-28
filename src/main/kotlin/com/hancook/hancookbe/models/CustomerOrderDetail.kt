@@ -1,15 +1,15 @@
 package com.hancook.hancookbe.models
 
-import com.hancook.hancookbe.models.compositeKeys.OrderDetailId
+import com.hancook.hancookbe.models.compositeKeys.CustomerOrderDetailId
 import jakarta.persistence.*
 import jakarta.persistence.Table
 import java.io.Serializable
 
 @Entity
 @Table(name = "order_details")
-class OrderDetail(
+class CustomerOrderDetail(
     @Id
-    var id: OrderDetailId,
+    var id: CustomerOrderDetailId,
 
     @Column(name = "quantity", nullable = false)
     var quantity: Int = 1,
@@ -19,7 +19,7 @@ class OrderDetail(
 ): Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is OrderDetail) return false
+        if (other !is CustomerOrderDetail) return false
 
         if (id != other.id) return false
         if (quantity != other.quantity) return false
