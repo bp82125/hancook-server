@@ -37,11 +37,13 @@ class SecurityConfiguration(
     private val customBearerTokenAuthenticationEntryPoint: CustomBearerTokenAuthenticationEntryPoint,
 
     @Autowired
-    private val customBearerTokenAccessDeniedHandler: CustomBearerTokenAccessDeniedHandler
+    private val customBearerTokenAccessDeniedHandler: CustomBearerTokenAccessDeniedHandler,
+
+    @Autowired
+    private val customNoAuthEntryPoint: CustomNoAuthEntryPoint
 ) {
 
     private lateinit var publicKey: RSAPublicKey
-
     private lateinit var privateKey: RSAPrivateKey
 
     @Value("\${api.endpoint.base-url}")
@@ -74,6 +76,7 @@ class SecurityConfiguration(
                     .accessDeniedHandler(customBearerTokenAccessDeniedHandler)
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .exceptionHandling { it.authenticationEntryPoint(customNoAuthEntryPoint) }
             .build()
     }
 

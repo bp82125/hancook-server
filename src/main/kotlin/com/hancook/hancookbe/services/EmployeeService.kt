@@ -28,17 +28,17 @@ class EmployeeService(
         return employeeRepository
             .findById(id)
             .map { it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id.toString()) }
     }
 
     fun createEmployee(requestEmployee: RequestEmployeeDto): ResponseEmployeeDto {
         val position = positionRepository
             .findById(requestEmployee.positionId)
-            .orElseThrow { ElementNotFoundException(objectName = "Position", id = requestEmployee.positionId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Position", id = requestEmployee.positionId.toString()) }
 
         val account = requestEmployee.accountId?.let { accountId ->
             accountRepository.findById(accountId)
-                .orElseThrow { ElementNotFoundException(objectName = "Account", id = requestEmployee.accountId) }
+                .orElseThrow { ElementNotFoundException(objectName = "Account", id = requestEmployee.accountId.toString()) }
         }
 
         val employee = requestEmployee.toEntity(position = position, account = account)
@@ -50,11 +50,11 @@ class EmployeeService(
     fun updateEmployee(id: UUID, requestEmployee: RequestEmployeeDto): ResponseEmployeeDto {
         val position = positionRepository
             .findById(requestEmployee.positionId)
-            .orElseThrow { ElementNotFoundException(objectName = "Position", id = requestEmployee.positionId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Position", id = requestEmployee.positionId.toString()) }
 
         val account = requestEmployee.accountId?.let { accountId ->
             accountRepository.findById(accountId)
-                .orElseThrow { ElementNotFoundException(objectName = "Account", id = requestEmployee.accountId) }
+                .orElseThrow { ElementNotFoundException(objectName = "Account", id = requestEmployee.accountId.toString()) }
         }
 
         val employee = requestEmployee.toEntity(id = id, position = position, account = account)
@@ -66,7 +66,7 @@ class EmployeeService(
     fun deleteEmployee(id: UUID) {
         val employee = employeeRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id.toString()) }
 
         employee.account?.removeEmployee()
         employeeRepository.deleteById(id)
@@ -75,11 +75,11 @@ class EmployeeService(
     fun assignAccountToEmployee(employeeId: UUID, accountId: UUID): ResponseEmployeeDto {
         val account = accountRepository
             .findById(accountId)
-            .orElseThrow { ElementNotFoundException(objectName = "Account", id = accountId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = accountId.toString()) }
 
         val employee = employeeRepository
             .findById(employeeId)
-            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId) }
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId.toString()) }
 
         if(account.employee != null) {
             account.employee?.removeAccount(account)

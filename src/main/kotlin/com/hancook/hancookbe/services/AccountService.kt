@@ -38,14 +38,14 @@ class AccountService (
         return accountRepository
             .findById(id)
             .map { it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
     }
 
     fun createAccount(requestAccount: CreateAccountDto): ResponseAccountDto {
         val employee = requestAccount.employeeId?.let {
             employeeRepository
                 .findById(it)
-                .orElseThrow { ElementNotFoundException(objectName = "Employee", id = requestAccount.employeeId) }
+                .orElseThrow { ElementNotFoundException(objectName = "Employee", id = requestAccount.employeeId.toString()) }
         }
 
 
@@ -68,7 +68,7 @@ class AccountService (
     fun updateAccount(id: UUID, updateAccount: UpdateAccountDto): ResponseAccountDto{
         val account = accountRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
             .apply { this.role = updateAccount.role }
 
         val updatedAccount = accountRepository.save(account)
@@ -78,7 +78,7 @@ class AccountService (
     fun changePasswordAccount(id: UUID, updatePasswordDto: UpdatePasswordDto): ResponseAccountDto{
         val account = accountRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
 
         if (!passwordEncoder.matches(updatePasswordDto.oldPassword, account.password)) {
             throw InvalidPasswordException("Invalid current password")
@@ -91,7 +91,7 @@ class AccountService (
     fun deleteAccount(id: UUID) {
         val account = accountRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
 
         account.removeEmployee()
         accountRepository.deleteById(id)
@@ -107,7 +107,7 @@ class AccountService (
     fun toggleAccount(id: UUID): ResponseAccountDto {
         return accountRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id.toString()) }
             .apply { this.enabled = !this.enabled }
             .let { accountRepository.save(it) }
             .toResponse()

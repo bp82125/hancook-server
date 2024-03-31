@@ -22,5 +22,4 @@ class CustomBasicAuthenticationEntryPoint(
         response.addHeader("WWW-Authenticate", "Basic realms=\"Realms\"")
         resolver.resolveException(request, response, null, authException)
     }
-
 }

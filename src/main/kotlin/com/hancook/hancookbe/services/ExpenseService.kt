@@ -24,7 +24,7 @@ class ExpenseService(
         return expenseRepository
             .findById(id)
             .map{ it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id.toString()) }
     }
 
     fun createExpense(requestExpenseDto: RequestExpenseDto): ResponseExpenseDto {
@@ -36,7 +36,7 @@ class ExpenseService(
         val newExpense = requestExpenseDto.toExpense(id)
         val updatedExpense = expenseRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id.toString()) }
             .let { expenseRepository.save(newExpense) }
 
         return updatedExpense.toResponse()
@@ -45,7 +45,7 @@ class ExpenseService(
     fun deleteExpense(id: UUID){
         expenseRepository
             .findById(id)
-            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id.toString()) }
             .let { expenseRepository.deleteById(id) }
     }
 }

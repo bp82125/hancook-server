@@ -1,21 +1,24 @@
 package com.hancook.hancookbe.models
 
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcType
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
 import java.util.*
 
 @Entity
+@Table(name = "positions")
 class Position (
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcType(VarcharJdbcType::class)
+    @Column(name = "position_id")
     val id: UUID?,
 
-    @Column(nullable = false)
+    @Column(name = "position_name", nullable = false)
     var positionName: String,
 
-    @Column(nullable = false)
+    @Column(name = "salary_coefficient", nullable = false)
     var salaryCoefficient: Double,
 
     @OneToMany(

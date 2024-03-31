@@ -21,7 +21,7 @@ class PositionService(private val positionRepository: PositionRepository) {
         return positionRepository
             .findById(id)
             .map { it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id.toString()) }
     }
 
     fun createPosition(requestPosition: RequestPositionDto): ResponsePositionDto{
@@ -36,7 +36,7 @@ class PositionService(private val positionRepository: PositionRepository) {
         val updatedPosition = positionRepository
             .findById(id)
             .map { positionRepository.save(position) }
-            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id.toString()) }
 
         return updatedPosition.toResponse()
     }
@@ -45,6 +45,6 @@ class PositionService(private val positionRepository: PositionRepository) {
         positionRepository
             .findById(id)
             .map { positionRepository.deleteById(id) }
-            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Position", id = id.toString()) }
     }
 }

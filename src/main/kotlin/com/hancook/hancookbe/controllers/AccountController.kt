@@ -29,7 +29,14 @@ class AccountController(
     @GetMapping("", "/")
     fun getAllAccounts(): ResponseEntity<ApiResponse<List<ResponseAccountDto>>>{
         val accounts = accountService.findAllAccounts()
-        return ResponseEntity.ok(ApiResponse(success = true, statusCode = HttpStatus.OK.value() ,data = accounts, message = "Found accounts"))
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = accounts,
+                message = "Found accounts"
+            )
+        )
     }
 
     @GetMapping("/{id}")

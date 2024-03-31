@@ -25,7 +25,7 @@ class DishTypeService (
         return dishTypeRepository
             .findById(id)
             .map { it.toResponse() }
-            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = id) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = id.toString()) }
     }
 
     fun createDishType(requestDishType: RequestDishTypeDto): ResponseDishTypeDto {
@@ -40,7 +40,7 @@ class DishTypeService (
         val updatedDishType = dishTypeRepository
             .findById(id)
             .map { dishTypeRepository.save(dishType) }
-            .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id) }
+            .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id.toString()) }
 
         return updatedDishType.toResponse()
     }
@@ -48,7 +48,7 @@ class DishTypeService (
     fun deleteDishType(id: UUID) {
         val dishType = dishTypeRepository
             .findById(id)
-            .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id) }
+            .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id.toString()) }
 
         if(dishType.dishes.isEmpty()){
             dishTypeRepository.deleteById(id)

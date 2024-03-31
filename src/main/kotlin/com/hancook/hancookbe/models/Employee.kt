@@ -2,28 +2,31 @@ package com.hancook.hancookbe.models
 
 import com.hancook.hancookbe.enums.Gender
 import jakarta.persistence.*
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcType
 import org.hibernate.type.descriptor.jdbc.VarcharJdbcType
 import java.util.*
 
 @Entity
+@Table(name = "employees")
 class Employee(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JdbcType(VarcharJdbcType::class)
+    @Column(name = "employee_id")
     val id: UUID?,
 
-    @Column(nullable = false)
+    @Column(name = "employee_name", nullable = false)
     var name: String,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "gender", nullable = false)
     var gender: Gender,
 
-    @Column(nullable = false)
+    @Column(name = "address", nullable = false)
     var address: String,
 
-    @Column(nullable = false)
+    @Column(name = "phone_number", nullable = false)
     var phoneNumber: String,
 
     @ManyToOne
@@ -31,7 +34,7 @@ class Employee(
     var position: Position,
 
     @OneToOne
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id")
     var account: Account? = null
 ) {
 
