@@ -27,6 +27,10 @@ class Expense(
 
     @Column(name = "created_at", nullable = false)
     val dateTime: LocalDateTime = LocalDateTime.now(),
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    var employee: Employee
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

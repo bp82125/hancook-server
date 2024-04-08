@@ -22,6 +22,14 @@ class Invoice (
     @Column(nullable = false)
     var customerPayment: Long,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    var employee: Employee?,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "table_id")
+    var table: com.hancook.hancookbe.models.Table?,
+
     @OneToMany(
         mappedBy = "id.invoice",
         fetch = FetchType.LAZY,
@@ -31,6 +39,15 @@ class Invoice (
     var details: List<InvoiceDetail> = mutableListOf()
 ) {
 
+    fun calculateTotalPrice(): Long {
+        val subtotal = details.sumOf { it.calculateSubtotal() }
+        val tax = (subtotal * 0.1).toLong()
+        return subtotal + tax
+    }
+
+    fun calculateChange(): Long {
+        return customerPayment - calculateTotalPrice()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -39,6 +56,8 @@ class Invoice (
         if (id != other.id) return false
         if (createdTime != other.createdTime) return false
         if (customerPayment != other.customerPayment) return false
+        if (employee != other.employee) return false
+        if (table != other.table) return false
         if (details != other.details) return false
 
         return true
@@ -48,12 +67,15 @@ class Invoice (
         var result = id?.hashCode() ?: 0
         result = 31 * result + createdTime.hashCode()
         result = 31 * result + customerPayment.hashCode()
+        result = 31 * result + employee.hashCode()
+        result = 31 * result + (table?.hashCode() ?: 0)
         result = 31 * result + details.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Invoice(id=$id, createdTime=$createdTime, customerPayment=$customerPayment, details=$details)"
+        return "Invoice(id=$id, createdTime=$createdTime, customerPayment=$customerPayment, employee=$employee, table=$table, details=$details)"
     }
+
 
 }

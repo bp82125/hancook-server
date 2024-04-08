@@ -5,6 +5,7 @@ import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestExpenseDto
 import com.hancook.hancookbe.dtos.ResponseExpenseDto
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
+import com.hancook.hancookbe.repositories.EmployeeRepository
 import com.hancook.hancookbe.repositories.ExpenseRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,8 @@ import java.util.*
 @Service
 @Transactional
 class ExpenseService(
-    @Autowired private val expenseRepository: ExpenseRepository
+    @Autowired private val expenseRepository: ExpenseRepository,
+    @Autowired private val employeeRepository: EmployeeRepository
 ) {
     fun getAllExpenses(): List<ResponseExpenseDto>{
         return expenseRepository.findAll().map { it.toResponse() }
@@ -28,17 +30,35 @@ class ExpenseService(
     }
 
     fun createExpense(requestExpenseDto: RequestExpenseDto): ResponseExpenseDto {
-        val expense = requestExpenseDto.toExpense()
+        val employeeId = UUID.fromString(requestExpenseDto.employeeId)
+
+        val employee = employeeRepository
+            .findById(employeeId)
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId.toString()) }
+
+        val expense = requestExpenseDto.toExpense(employee = employee)
         return expenseRepository.save(expense).toResponse()
     }
 
     fun updateExpense(id: UUID, requestExpenseDto: RequestExpenseDto): ResponseExpenseDto? {
-        val newExpense = requestExpenseDto.toExpense(id)
-        val updatedExpense = expenseRepository
+        val oldExpense = expenseRepository
             .findById(id)
             .orElseThrow { ElementNotFoundException(objectName = "Expense", id = id.toString()) }
-            .let { expenseRepository.save(newExpense) }
 
+        val employeeId = UUID.fromString(requestExpenseDto.employeeId)
+
+        val employee = employeeRepository
+            .findById(employeeId)
+            .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId.toString()) }
+
+        oldExpense.apply {
+            this.employee = employee
+            this.name = requestExpenseDto.name
+            this.note = requestExpenseDto.note
+            this.amount = requestExpenseDto.amount
+        }
+
+        val updatedExpense = expenseRepository.save(oldExpense)
         return updatedExpense.toResponse()
     }
 

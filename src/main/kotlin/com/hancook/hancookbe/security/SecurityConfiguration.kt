@@ -63,8 +63,6 @@ class SecurityConfiguration(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http.authorizeHttpRequests {
             it
-                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/dishes/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/employees/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
         }
             .csrf { it.disable() }

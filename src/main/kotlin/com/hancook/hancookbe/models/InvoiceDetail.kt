@@ -5,6 +5,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.io.Serializable
 
 @Entity
 @Table(name = "invoice_details")
@@ -20,7 +21,11 @@ class InvoiceDetail(
 
     @Column(name = "note", nullable = false)
     var note: String? = ""
-) {
+): Serializable {
+    fun calculateSubtotal(): Long {
+        return unitPrice * quantity
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is InvoiceDetail) return false
