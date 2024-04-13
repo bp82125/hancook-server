@@ -17,4 +17,24 @@ class InvoiceDetailId(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id", referencedColumnName = "dish_id")
     var dish: Dish,
-): Serializable
+): Serializable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is InvoiceDetailId) return false
+
+        if (invoice != other.invoice) return false
+        if (dish != other.dish) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = invoice.hashCode()
+        result = 31 * result + dish.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "InvoiceDetailId(invoice=$invoice, dish=$dish)"
+    }
+}

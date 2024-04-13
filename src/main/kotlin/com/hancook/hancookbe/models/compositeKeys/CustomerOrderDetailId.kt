@@ -14,4 +14,24 @@ class CustomerOrderDetailId(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id", referencedColumnName = "dish_id")
     var dish: Dish,
-) : Serializable
+) : Serializable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CustomerOrderDetailId) return false
+
+        if (customerOrder != other.customerOrder) return false
+        if (dish != other.dish) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = customerOrder.hashCode()
+        result = 31 * result + dish.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "CustomerOrderDetailId(customerOrder=$customerOrder, dish=$dish)"
+    }
+}

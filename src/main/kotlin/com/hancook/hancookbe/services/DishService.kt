@@ -21,7 +21,7 @@ class DishService(
 ) {
 
     fun getAllDishes(): List<ResponseDishDto> {
-        return dishRepository.findAll().map { it.toResponse() }
+        return dishRepository.findAllByDeletedFalse().map { it.toResponse() }
     }
 
     fun getDishById(id: UUID): ResponseDishDto {
@@ -56,9 +56,11 @@ class DishService(
     }
 
     fun deleteDish(id: UUID) {
-        dishRepository
+        val dish = dishRepository
             .findById(id)
-            .map { dishRepository.deleteById(id) }
             .orElseThrow { ElementNotFoundException(objectName = "Dish", id = id.toString()) }
+
+        dish.deleted = true
+        dishRepository.save(dish)
     }
 }

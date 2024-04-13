@@ -27,6 +27,9 @@ class Dish (
     @ManyToOne
     @JoinColumn(name = "dish_type_id", nullable = false)
     var dishType: DishType,
+
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -37,16 +40,23 @@ class Dish (
         if (price != other.price) return false
         if (imagePath != other.imagePath) return false
         if (dishType != other.dishType) return false
+        if (deleted != other.deleted) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
+        var result = id?.hashCode() ?: 0
         result = 31 * result + dishName.hashCode()
         result = 31 * result + price.hashCode()
         result = 31 * result + imagePath.hashCode()
         result = 31 * result + dishType.hashCode()
+        result = 31 * result + deleted.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "Dish(id=$id, dishName='$dishName', price=$price, imagePath='$imagePath', dishType=$dishType, deleted=$deleted)"
+    }
+
 }

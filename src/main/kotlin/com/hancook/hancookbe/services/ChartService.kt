@@ -1,9 +1,14 @@
 package com.hancook.hancookbe.services
 
+import com.hancook.hancookbe.converters.toCount
 import com.hancook.hancookbe.converters.toDataByTime
-import com.hancook.hancookbe.dtos.ResponseProfit
+import com.hancook.hancookbe.converters.toResponse
+import com.hancook.hancookbe.dtos.*
+import com.hancook.hancookbe.models.Dish
 import com.hancook.hancookbe.repositories.ExpenseRepository
+import com.hancook.hancookbe.repositories.InvoiceDetailRepository
 import com.hancook.hancookbe.repositories.InvoiceRepository
+import com.hancook.hancookbe.repositories.TableRepository
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -17,25 +22,58 @@ import java.time.temporal.TemporalAdjusters
 @Transactional
 class ChartService(
     @Autowired private val invoiceRepository: InvoiceRepository,
-    @Autowired private val expenseRepository: ExpenseRepository
+    @Autowired private val expenseRepository: ExpenseRepository,
+    @Autowired private val tableRepository: TableRepository,
+    @Autowired private val invoiceDetailRepository: InvoiceDetailRepository
 ) {
     fun calculateProfits(timeRange: String, startDate: LocalDate?, endDate: LocalDate?): ResponseProfit{
-        return  when(timeRange){
-            "today" -> this.calculateProfitsForDate(LocalDate.now())
-            "yesterday" -> this.calculateProfitsForDate(LocalDate.now().minusDays(1))
+        return when(timeRange){
+            "today" -> this.calculateProfitsForDate(LocalDateTime.now())
+            "yesterday" -> this.calculateProfitsForDate(LocalDateTime.now().minusDays(1))
             "week" -> this.calculateProfitsForWeek()
             "month" -> this.calculateProfitsForMonth()
             "quarter" -> this.calculateProfitsForQuarter()
+            "year" -> this.calculateProfitsForYear()
             else ->  throw IllegalArgumentException("Invalid time range")
         }
     }
 
-    fun calculateProfitsForDate(date: LocalDate): ResponseProfit {
-        val times = listOf("0", "4", "8", "12", "16", "20", "24")
-        val revenueData = calculateRevenueForDateByInterval(date).toDataByTime(times)
-        val expenseData = calculateExpensesForDateByInterval(date).toDataByTime(times)
+    fun countTop5DishesByCheckoutDetails(): ResponseTop5Dish {
+        val dishes = mutableListOf<ResponseDishCountDto>()
+        val counts = mutableListOf<Long>()
 
-        return ResponseProfit(revenueData, expenseData)
+        val dishCountList = invoiceDetailRepository.countTop5DishesByCheckoutDetails().take(5)
+
+        for (entry in dishCountList) {
+            val dish = entry[0] as Dish
+            val count = entry[1] as Long
+            dishes.add(dish.toCount(count))
+        }
+
+        return ResponseTop5Dish(dishes, invoiceRepository.count())
+    }
+
+    fun getTableStateCounts(): ResponseTableState {
+        val occupiedCount = tableRepository.countByCustomerOrderIsNotNull()
+        val availableCount = tableRepository.countByCustomerOrderIsNull()
+
+        return ResponseTableState(occupiedCount.toInt(), availableCount.toInt())
+    }
+
+    fun calculateProfitsForDate(date: LocalDateTime): ResponseProfit {
+        val today = date.with(LocalTime.MIN)
+        val times = mutableListOf<LocalDateTime>()
+
+        var startHour = today
+
+        repeat(8){
+            times.add(startHour)
+            startHour = startHour.plusHours(4)
+        }
+
+        return calculateProfitsForTimeIntervals(times){
+            it.hour.toString()
+        }
     }
 
     fun calculateProfitsForWeek(): ResponseProfit {
@@ -43,9 +81,7 @@ class ChartService(
         val currentDayOfWeek = currentDateTime.dayOfWeek.value
         val startOfCurrentWeek = currentDateTime.minusDays((currentDayOfWeek - 1).toLong()).toLocalDate()
 
-        val startOfLastWeek = startOfCurrentWeek.minusWeeks(1)
-
-        val times = (0 .. 7).map { startOfLastWeek.plusDays(it.toLong()).atStartOfDay() }
+        val times = (0 .. 7).map { startOfCurrentWeek.plusDays(it.toLong()).atStartOfDay() }
 
         return calculateProfitsForTimeIntervals(times)
     }
@@ -53,15 +89,15 @@ class ChartService(
     fun calculateProfitsForMonth(): ResponseProfit {
         val currentDate = LocalDateTime.now().with(LocalTime.MIN)
         val firstDayOfCurrentMonth = currentDate.withDayOfMonth(1)
-        val firstDayOfLastMonth = firstDayOfCurrentMonth.minusMonths(1)
+        val firstDayOfNextMonth = firstDayOfCurrentMonth.plusMonths(1)
 
-        val firstMondayOfLastMonth = firstDayOfLastMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY))
-        val weeks = (firstMondayOfLastMonth.until(firstDayOfLastMonth.with(TemporalAdjusters.lastDayOfMonth()), java.time.temporal.ChronoUnit.WEEKS) + 1).toInt()
+        val firstMondayOfLastMonth = firstDayOfCurrentMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY))
+        val weeks = (firstMondayOfLastMonth.until(firstDayOfCurrentMonth.with(TemporalAdjusters.lastDayOfMonth()), java.time.temporal.ChronoUnit.WEEKS) + 1).toInt()
 
         val times = mutableListOf<LocalDateTime>()
 
-        if(firstDayOfLastMonth != firstMondayOfLastMonth){
-            times.add(firstDayOfLastMonth)
+        if(firstDayOfCurrentMonth != firstMondayOfLastMonth){
+            times.add(firstDayOfCurrentMonth)
         }
 
         var nextMonday = firstMondayOfLastMonth
@@ -69,8 +105,8 @@ class ChartService(
             times.add(nextMonday)
             nextMonday = nextMonday.plusWeeks(1)
         }
-        times.add(firstDayOfLastMonth.with(TemporalAdjusters.lastDayOfMonth()))
-        times.add(firstDayOfCurrentMonth)
+        times.add(firstDayOfCurrentMonth.with(TemporalAdjusters.lastDayOfMonth()))
+        times.add(firstDayOfNextMonth)
         return calculateProfitsForTimeIntervals(times)
     }
 
@@ -80,27 +116,39 @@ class ChartService(
         val currentQuarter = (currentMonth - 1) / 3 + 1
         val firstMonthOfQuarter = (currentQuarter - 1) * 3 + 1
 
-        val firstDayOfLastQuarter = currentDate.withMonth(firstMonthOfQuarter - 3).withDayOfMonth(1)
-        val startOfFirstMonthOfLastQuarter = firstDayOfLastQuarter.withDayOfMonth(1)
+        val firstDayOfCurrentQuarter = currentDate.withMonth(firstMonthOfQuarter).withDayOfMonth(1)
 
         val times = mutableListOf<LocalDateTime>()
 
-        var startDate = startOfFirstMonthOfLastQuarter
+        var startDate = firstDayOfCurrentQuarter
         repeat(4) {
             times.add(startDate)
             startDate = startDate.plusMonths(1)
         }
 
-        return calculateProfitsForTimeIntervals(times) {
-            date: LocalDateTime -> "${date.month}"
+        return calculateProfitsForTimeIntervals(times)
+    }
+
+    fun calculateProfitsForYear(): ResponseProfit {
+        val currentDate = LocalDateTime.now().with(LocalTime.MIN)
+
+        val firstDayOfCurrentYear = currentDate.withMonth(1).withDayOfMonth(1)
+        val times = mutableListOf<LocalDateTime>()
+
+        var startDate = firstDayOfCurrentYear
+        repeat(13) {
+            times.add(startDate)
+            startDate = startDate.plusMonths(1)
         }
+
+        return calculateProfitsForTimeIntervals(times)
     }
 
     fun calculateProfitsForTimeIntervals(
         timeIntervals: List<LocalDateTime>,
         formatTime: (date: LocalDateTime) -> String = { dateTime -> dateTime.toString() }
     ) : ResponseProfit {
-        val times = timeIntervals.map { formatTime(it) }.dropLast(1)
+        val times = timeIntervals.dropLast(1)
         val revenueData = calculateRevenueForTimeIntervals(timeIntervals).toDataByTime(times)
         val expenseData = calculateExpensesForTimeIntervals(timeIntervals).toDataByTime(times)
         return ResponseProfit(revenueData, expenseData)
@@ -128,25 +176,5 @@ class ChartService(
             expenseMap[startDate.toString()] = totalExpense
         }
         return expenseMap
-    }
-
-    private fun calculateRevenueForDateByInterval(date: LocalDate): Map<String, Long> {
-        val invoices = invoiceRepository.findAllByCreatedTimeBetween(
-            date.atStartOfDay(),
-            date.atTime(LocalTime.MAX)
-        )
-        return invoices.groupBy { it.createdTime.hour / 4 }
-            .mapValues { it.value.sumOf { invoice -> invoice.customerPayment } }
-            .mapKeys { entry -> "${entry.key * 4}" }
-    }
-
-    private fun calculateExpensesForDateByInterval(date: LocalDate): Map<String, Long> {
-        val expenses = expenseRepository.findAllByDateTimeBetween(
-            date.atStartOfDay(),
-            date.atTime(LocalTime.MAX)
-        )
-        return expenses.groupBy { it.dateTime.hour / 4 }
-            .mapValues { it.value.sumOf { expense -> expense.amount } }
-            .mapKeys { entry -> "${entry.key * 4}" }
     }
 }

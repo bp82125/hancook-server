@@ -25,3 +25,9 @@ data class ResponseDishDto(
     val imagePath: String,
     val dishType: ResponseDishTypeDto
 )
+
+data class ResponseDishCountDto(
+    val id: UUID?,
+    val name: String,
+    val count: Long
+)

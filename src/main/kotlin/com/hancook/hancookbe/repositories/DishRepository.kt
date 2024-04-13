@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface DishRepository : JpaRepository<Dish, UUID>
+interface DishRepository : JpaRepository<Dish, UUID> {
+    fun findAllByDeletedFalse(): List<Dish>
+}

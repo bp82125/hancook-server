@@ -1,6 +1,7 @@
 package com.hancook.hancookbe.converters
 
 import com.hancook.hancookbe.dtos.RequestDishDto
+import com.hancook.hancookbe.dtos.ResponseDishCountDto
 import com.hancook.hancookbe.dtos.ResponseDishDto
 import com.hancook.hancookbe.models.Dish
 import com.hancook.hancookbe.models.DishType
@@ -14,6 +15,14 @@ fun Dish.toResponse() : ResponseDishDto {
         price = this.price,
         imagePath = this.imagePath,
         dishType = this.dishType.toResponse()
+    )
+}
+
+fun Dish.toCount(count: Long): ResponseDishCountDto {
+    return ResponseDishCountDto(
+        id = this.id,
+        name = this.dishName,
+        count = count
     )
 }
 

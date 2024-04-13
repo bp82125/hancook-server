@@ -1,10 +1,11 @@
 package com.hancook.hancookbe.controllers
 
+import com.hancook.hancookbe.dtos.ResponseTop5Dish
 import com.hancook.hancookbe.dtos.ResponseProfit
+import com.hancook.hancookbe.dtos.ResponseTableState
 import com.hancook.hancookbe.services.ChartService
 import com.hancook.hancookbe.system.ApiResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,6 +32,34 @@ class ChartController(
                 statusCode = HttpStatus.OK.value(),
                 data = profits,
                 message = "Found profits"
+            )
+        )
+    }
+
+    @GetMapping("/tables", "/tables/")
+    fun getTables(
+    ): ResponseEntity<ApiResponse<ResponseTableState>> {
+        val tableStateCount = chartService.getTableStateCounts()
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = tableStateCount,
+                message = "Found number of tables by states"
+            )
+        )
+    }
+
+    @GetMapping("/dishes", "/dishes/")
+    fun getDishes(
+    ): ResponseEntity<ApiResponse<ResponseTop5Dish>> {
+        val dishes = chartService.countTop5DishesByCheckoutDetails()
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = dishes,
+                message = "Found top 5 dishes"
             )
         )
     }
