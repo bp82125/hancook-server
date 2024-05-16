@@ -17,7 +17,7 @@ class TableService(
     @Autowired private val tableRepository: TableRepository
 ) {
     fun findAllTables(): List<ResponseTableDto> {
-        return tableRepository.findAll().map { it.toResponse() }
+        return tableRepository.findAllByDeletedFalse().map { it.toResponse() }
     }
 
     fun findTableById(id: UUID): ResponseTableDto {
@@ -54,6 +54,9 @@ class TableService(
             .findById(id)
             .orElseThrow { ElementNotFoundException(objectName = "Table", id = id.toString()) }
 
-        tableRepository.deleteById(id)
+
+        table.deleted = !table.deleted
+        tableRepository.save(table)
+
     }
 }

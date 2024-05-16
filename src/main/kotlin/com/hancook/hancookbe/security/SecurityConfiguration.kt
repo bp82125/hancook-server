@@ -63,6 +63,40 @@ class SecurityConfiguration(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http.authorizeHttpRequests {
             it
+                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/expenses/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/expenses/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "${this.baseUrl}/expenses/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/expenses/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/positions/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/positions/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "${this.baseUrl}/positions/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/positions/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/employees/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/employees/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/accounts").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/accounts/toggle/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/accounts/changePassword/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/accounts/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/dishes/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "${this.baseUrl}/dishes/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/dishes/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/dishTypes/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "${this.baseUrl}/dishTypes/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/dishTypes/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "${this.baseUrl}/tables/").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "${this.baseUrl}/tables/").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/tables/").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.GET, "${this.baseUrl}/charts/**").hasAuthority("ADMIN")
+
+                .requestMatchers(HttpMethod.DELETE, "${this.baseUrl}/invoices/**").hasAuthority("ADMIN")
+
                 .anyRequest().authenticated()
         }
             .csrf { it.disable() }

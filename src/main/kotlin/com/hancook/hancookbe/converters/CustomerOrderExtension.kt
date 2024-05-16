@@ -2,6 +2,7 @@ package com.hancook.hancookbe.converters
 
 import com.hancook.hancookbe.dtos.RequestCustomerOrderDto
 import com.hancook.hancookbe.dtos.ResponseCustomerOrderDto
+import com.hancook.hancookbe.dtos.ResponseOrderInfoDto
 import com.hancook.hancookbe.models.*
 import com.hancook.hancookbe.models.compositeKeys.InvoiceDetailId
 import java.time.LocalDateTime
@@ -27,6 +28,15 @@ fun CustomerOrder.toResponse(): ResponseCustomerOrderDto {
         employee = this.employee.toResponse(),
         table = this.table?.toResponse(),
         details = this.details.map { it.toResponse() },
+        placedTime = this.orderPlacedTime
+    )
+}
+
+fun CustomerOrder.toInfo(): ResponseOrderInfoDto {
+    return ResponseOrderInfoDto(
+        id = this.id,
+        employee = this.employee.toResponse(),
+        table = this.table?.toResponse(),
         placedTime = this.orderPlacedTime
     )
 }

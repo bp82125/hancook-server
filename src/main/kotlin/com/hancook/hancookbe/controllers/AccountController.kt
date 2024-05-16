@@ -1,9 +1,6 @@
 package com.hancook.hancookbe.controllers
 
-import com.hancook.hancookbe.dtos.CreateAccountDto
-import com.hancook.hancookbe.dtos.ResponseAccountDto
-import com.hancook.hancookbe.dtos.UpdateAccountDto
-import com.hancook.hancookbe.dtos.UpdatePasswordDto
+import com.hancook.hancookbe.dtos.*
 import com.hancook.hancookbe.services.AccountService
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
@@ -12,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -100,7 +98,7 @@ class AccountController(
         )
     }
 
-    @PutMapping("/changePassword/{id}")
+    @PatchMapping("/changePassword/{id}")
     fun changePasswordAccount(
         @PathVariable id: UUID,
         @Valid @RequestBody requestPassword: UpdatePasswordDto
@@ -112,6 +110,22 @@ class AccountController(
                 statusCode = HttpStatus.OK.value(),
                 data = account,
                 message = "Updated password success"
+            )
+        )
+    }
+
+    @PatchMapping("/resetPassword/{id}")
+    fun resetPasswordAccount(
+        @PathVariable id: UUID,
+        @Valid @RequestBody requestPassword: ResetPasswordDto
+    ): ResponseEntity<ApiResponse<ResponseAccountDto>> {
+        val account = accountService.resetPasswordAccount(id, requestPassword)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = account,
+                message = "Reset password success"
             )
         )
     }

@@ -17,20 +17,15 @@ class AdminUserInitializer(
     private val accountService: AccountService,
     private val employeeService: EmployeeService,
     private val positionService: PositionService,
-    private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
         // Check if the admin user already exists
-        if (
-            accountService.findAllAccounts().isEmpty()
-            && employeeService.getAllEmployees().isEmpty()
-            && positionService.getAllPosition().isEmpty()
-            ) {
+        if (!accountService.adminAccountExist()) {
 
             val adminPosition = RequestPositionDto(
                 positionName = "Quản trị hệ thống",
-                salaryCoefficient = 0.0
+                salaryCoefficient = 100.0
             )
 
             val createdAdminPosition = positionService.createPosition(adminPosition)
@@ -48,16 +43,14 @@ class AdminUserInitializer(
 
             val createdAdminEmployee = adminEmployee?.let { employeeService.createEmployee(it) }
 
-
             // Admin user doesn't exist, create it
             val adminAccount = CreateAccountDto(
                 username = "admin",
-                password = "adminPassword", // You should hash this password using the password encoder
-                role = Role.ADMIN, // Assuming you have a Role enum with ADMIN role defined
+                password = "adminPassword123",
+                role = Role.ADMIN,
                 enabled = true,
                 employeeId = createdAdminEmployee?.id
             )
-            // Save admin user
             accountService.createAccount(adminAccount)
             println("Admin user created successfully")
         } else {

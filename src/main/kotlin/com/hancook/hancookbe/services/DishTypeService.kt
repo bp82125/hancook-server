@@ -18,7 +18,7 @@ class DishTypeService (
     @Autowired private val dishTypeRepository: DishTypeRepository
 ) {
     fun getAllDishTypes(): List<ResponseDishTypeDto> {
-        return dishTypeRepository.findAll().map { it.toResponse() }
+        return dishTypeRepository.findAllByDeletedFalse().map { it.toResponse() }
     }
 
     fun getDishTypeById(id: UUID): ResponseDishTypeDto {
@@ -48,11 +48,17 @@ class DishTypeService (
     fun deleteDishType(id: UUID) {
         val dishType = dishTypeRepository
             .findById(id)
-            .orElseThrow{ ElementNotFoundException(objectName = "Dish type", id = id.toString()) }
+            .orElseThrow { ElementNotFoundException(objectName = "Dish type", id = id.toString()) }
 
-        if(dishType.dishes.isEmpty()){
-            dishTypeRepository.deleteById(id)
-        }else{
+        val nonDeletedDishes = dishType.dishes.filter { !it.deleted }
+
+        if (nonDeletedDishes.isEmpty()) {
+            // Soft delete the DishType and associated Dishes
+            dishType.deleted = true
+            dishType.dishes.forEach { it.deleted = true }
+
+            dishTypeRepository.save(dishType)
+        } else {
             throw AssociatedEntitiesException("Dish type", "Dish")
         }
     }

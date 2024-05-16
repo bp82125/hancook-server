@@ -7,6 +7,7 @@ import com.hancook.hancookbe.system.ApiResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -60,6 +61,21 @@ class InvoiceController(
                 statusCode = HttpStatus.OK.value(),
                 data = createdInvoice,
                 message = "Created invoice of order ID: $orderId"
+            )
+        )
+    }
+
+    @DeleteMapping("/invoices/{invoiceId}", "/invoices/{invoiceId}/")
+    fun deleteInvoice(
+        @PathVariable invoiceId: UUID,
+    ): ResponseEntity<ApiResponse<ResponseInvoice>> {
+        invoiceService.deleteInvoice(invoiceId)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                statusCode = HttpStatus.OK.value(),
+                data = null,
+                message = "Successfully deleted invoice: $invoiceId"
             )
         )
     }

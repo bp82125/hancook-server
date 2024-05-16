@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface PositionRepository : JpaRepository<Position, UUID>
+interface PositionRepository : JpaRepository<Position, UUID> {
+    fun findAllByDeletedFalse(): List<Position>
+}

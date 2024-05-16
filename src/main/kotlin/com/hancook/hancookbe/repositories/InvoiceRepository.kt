@@ -10,4 +10,6 @@ import java.util.UUID
 @Repository
 interface InvoiceRepository : JpaRepository<Invoice, UUID> {
     fun findAllByCreatedTimeBetween(startDate: LocalDateTime, endDate: LocalDateTime): List<Invoice>
+
+    fun countByCreatedTimeBetween(startDate: LocalDateTime, endDate: LocalDateTime): Long
 }

@@ -29,6 +29,9 @@ class Employee(
     @Column(name = "phone_number", nullable = false)
     var phoneNumber: String,
 
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false,
+
     @ManyToOne
     @JoinColumn(name = "position_id")
     var position: Position,
@@ -37,6 +40,11 @@ class Employee(
     @JoinColumn(name = "account_id")
     var account: Account? = null
 ) {
+
+    fun removeAccount() {
+        this.account?.employee = null
+        this.account = null
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -47,6 +55,7 @@ class Employee(
         if (gender != other.gender) return false
         if (address != other.address) return false
         if (phoneNumber != other.phoneNumber) return false
+        if (deleted != other.deleted) return false
         if (position != other.position) return false
         if (account != other.account) return false
 
@@ -59,15 +68,14 @@ class Employee(
         result = 31 * result + gender.hashCode()
         result = 31 * result + address.hashCode()
         result = 31 * result + phoneNumber.hashCode()
+        result = 31 * result + deleted.hashCode()
         result = 31 * result + position.hashCode()
-        result = 31 * result + account.hashCode()
+        result = 31 * result + (account?.hashCode() ?: 0)
         return result
     }
 
-    fun removeAccount(account: Account) {
-        this.account?.employee = null
-        this.account = null
-
+    override fun toString(): String {
+        return "Employee(id=$id, name='$name', gender=$gender, address='$address', phoneNumber='$phoneNumber', deleted=$deleted, position=$position, account=$account)"
     }
 
 }

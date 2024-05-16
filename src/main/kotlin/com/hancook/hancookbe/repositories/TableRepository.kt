@@ -10,4 +10,6 @@ import java.util.UUID
 interface TableRepository : JpaRepository<Table, UUID>{
     fun countByCustomerOrderIsNotNull(): Long
     fun countByCustomerOrderIsNull(): Long
+
+    fun findAllByDeletedFalse(): List<Table>
 }

@@ -37,6 +37,11 @@ data class UpdatePasswordDto(
     val newPassword: String,
 )
 
+data class ResetPasswordDto(
+    @field:NotEmpty(message = "New password is required")
+    val newPassword: String,
+)
+
 data class ResponseAccountDto(
     val id: UUID?,
     val username: String,

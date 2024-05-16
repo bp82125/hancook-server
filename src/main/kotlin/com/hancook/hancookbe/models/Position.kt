@@ -26,8 +26,14 @@ class Position (
         cascade = [CascadeType.PERSIST, CascadeType.MERGE],
         fetch = FetchType.LAZY,
         targetEntity = Employee::class)
-    var employees: List<Employee>
+    var employees: List<Employee>,
+
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false
 ) {
+
+    fun getNumberOfEmployees(): Int = employees.filter { !it.deleted }.size
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Position) return false
@@ -35,6 +41,8 @@ class Position (
         if (id != other.id) return false
         if (positionName != other.positionName) return false
         if (salaryCoefficient != other.salaryCoefficient) return false
+        if (employees != other.employees) return false
+        if (deleted != other.deleted) return false
 
         return true
     }
@@ -43,8 +51,12 @@ class Position (
         var result = id?.hashCode() ?: 0
         result = 31 * result + positionName.hashCode()
         result = 31 * result + salaryCoefficient.hashCode()
+        result = 31 * result + employees.hashCode()
+        result = 31 * result + deleted.hashCode()
         return result
     }
 
-    fun getNumberOfEmployees(): Int = employees.size
+    override fun toString(): String {
+        return "Position(id=$id, positionName='$positionName', salaryCoefficient=$salaryCoefficient, employees=$employees, deleted=$deleted)"
+    }
 }

@@ -53,6 +53,51 @@ class ChartService(
         return ResponseTop5Dish(dishes, invoiceRepository.count())
     }
 
+
+    fun calculateTop5Dishes(timeRange: String): ResponseTop5Dish {
+        val startDate: LocalDateTime
+        val endDate: LocalDateTime
+
+        when (timeRange) {
+            "today" -> {
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0)
+                endDate = startDate.plusDays(1)
+            }
+            "yesterday" -> {
+                startDate = LocalDateTime.now().minusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0)
+                endDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0)
+            }
+            "week" -> {
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).minusDays((LocalDateTime.now().dayOfWeek.value - 1).toLong())
+                endDate = startDate.plusWeeks(1)
+            }
+            "month" -> {
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).withDayOfMonth(1)
+                endDate = startDate.plusMonths(1)
+            }
+            "quarter" -> {
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).withMonth(((LocalDateTime.now().monthValue - 1) / 3) * 3 + 1).withDayOfMonth(1)
+                endDate = startDate.plusMonths(3)
+            }
+            "year" -> {
+                startDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).withDayOfYear(1)
+                endDate = startDate.plusYears(1)
+            }
+            else -> throw IllegalArgumentException("Invalid time range")
+        }
+
+        val dishes = mutableListOf<ResponseDishCountDto>()
+        val dishCountList = invoiceDetailRepository.countTop5DishesByCheckoutDetails(startDate, endDate).take(5)
+
+        for (entry in dishCountList) {
+            val dish = entry[0] as Dish
+            val count = entry[1] as Long
+            dishes.add(dish.toCount(count))
+        }
+
+        return ResponseTop5Dish(dishes, invoiceRepository.countByCreatedTimeBetween(startDate, endDate))
+    }
+
     fun getTableStateCounts(): ResponseTableState {
         val occupiedCount = tableRepository.countByCustomerOrderIsNotNull()
         val availableCount = tableRepository.countByCustomerOrderIsNull()
@@ -160,7 +205,7 @@ class ChartService(
             val startDate = timeIntervals[i]
             val endDate = timeIntervals[i + 1].minusNanos(1) // Adjusted to the end of the previous interval
             val invoices = invoiceRepository.findAllByCreatedTimeBetween(startDate, endDate)
-            val totalRevenue = invoices.sumOf { it.customerPayment }
+            val totalRevenue = invoices.sumOf { it.calculateTotalPrice() }
             revenueMap[startDate.toString()] = totalRevenue
         }
         return revenueMap

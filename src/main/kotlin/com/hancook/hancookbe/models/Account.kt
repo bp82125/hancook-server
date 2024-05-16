@@ -33,6 +33,10 @@ class Account(
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     var employee: Employee? = null
 ) {
+    fun isAdmin(): Boolean {
+        return username == "admin"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Account) return false

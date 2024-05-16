@@ -26,6 +26,9 @@ class DishType (
         targetEntity = Dish::class
     )
     var dishes: List<Dish> = mutableListOf(),
+
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -46,6 +49,6 @@ class DishType (
     }
 
     fun getNumberOfDishes(): Int {
-        return this.dishes.size ?: 0
+        return this.dishes.filter { !it.deleted }.size
     }
 }

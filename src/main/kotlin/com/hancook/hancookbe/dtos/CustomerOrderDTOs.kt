@@ -16,3 +16,10 @@ data class ResponseCustomerOrderDto(
     val placedTime: LocalDateTime,
     val details: List<ResponseOrderDetailDto>,
 )
+
+data class ResponseOrderInfoDto(
+    val id: UUID?,
+    val employee: ResponseEmployeeDto,
+    val table: ResponseTableDto?,
+    val placedTime: LocalDateTime
+)

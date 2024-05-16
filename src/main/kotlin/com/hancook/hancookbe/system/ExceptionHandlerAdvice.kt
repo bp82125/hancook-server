@@ -74,6 +74,30 @@ class ExceptionHandlerAdvice {
             .body(ApiResponse(success = false, statusCode = HttpStatus.UNAUTHORIZED.value(), data = ex.message, message = "Invalid password provided."))
     }
 
+    @ExceptionHandler(DeleteAdminAccountException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleDeleteAdminAccountException(ex: DeleteAdminAccountException): ResponseEntity<ApiResponse<String>>{
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.FORBIDDEN.value(), message = ex.message))
+    }
+
+    @ExceptionHandler(DeleteAdminAccountPositionException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleDeleteAdminAccountException(ex: DeleteAdminAccountPositionException): ResponseEntity<ApiResponse<String>>{
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.FORBIDDEN.value(), message = ex.message))
+    }
+
+    @ExceptionHandler(DeleteAdminAccountEmployeeException::class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    fun handleDeleteAdminAccountException(ex: DeleteAdminAccountEmployeeException): ResponseEntity<ApiResponse<String>>{
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ApiResponse(success = false, statusCode = HttpStatus.FORBIDDEN.value(), message = ex.message))
+    }
+
     @ExceptionHandler(AuthenticationException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<ApiResponse<Unit>> {

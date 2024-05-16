@@ -4,6 +4,7 @@ import com.hancook.hancookbe.converters.toEntity
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestEmployeeDto
 import com.hancook.hancookbe.dtos.ResponseEmployeeDto
+import com.hancook.hancookbe.exceptions.DeleteAdminAccountEmployeeException
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import com.hancook.hancookbe.repositories.AccountRepository
 import com.hancook.hancookbe.repositories.EmployeeRepository
@@ -21,7 +22,7 @@ class EmployeeService(
     @Autowired private val accountRepository: AccountRepository
 ) {
     fun getAllEmployees(): List<ResponseEmployeeDto>{
-        return employeeRepository.findAll().map { it.toResponse() }
+        return employeeRepository.findAllByDeletedFalse().map { it.toResponse() }
     }
 
     fun getEmployeeById(id: UUID): ResponseEmployeeDto {
@@ -68,8 +69,18 @@ class EmployeeService(
             .findById(id)
             .orElseThrow { ElementNotFoundException(objectName = "Employee", id = id.toString()) }
 
-        employee.account?.removeEmployee()
-        employeeRepository.deleteById(id)
+        if (employee.account != null){
+            if(employee.account!!.isAdmin()){
+                throw DeleteAdminAccountEmployeeException(employee.name)
+            }
+
+            val accountId = employee.account!!.id
+            employee.removeAccount()
+            accountId?.let { accountRepository.deleteById(it) }
+        }
+
+        employee.deleted = true
+        employeeRepository.save(employee)
     }
 
     fun assignAccountToEmployee(employeeId: UUID, accountId: UUID): ResponseEmployeeDto {
@@ -82,7 +93,7 @@ class EmployeeService(
             .orElseThrow { ElementNotFoundException(objectName = "Employee", id = employeeId.toString()) }
 
         if(account.employee != null) {
-            account.employee?.removeAccount(account)
+            account.employee?.removeAccount()
         }
 
         employee.account = account

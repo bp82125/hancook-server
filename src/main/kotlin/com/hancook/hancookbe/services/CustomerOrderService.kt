@@ -1,9 +1,11 @@
 package com.hancook.hancookbe.services
 
 import com.hancook.hancookbe.converters.toEntity
+import com.hancook.hancookbe.converters.toInfo
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.dtos.RequestCustomerOrderDto
 import com.hancook.hancookbe.dtos.ResponseCustomerOrderDto
+import com.hancook.hancookbe.dtos.ResponseOrderInfoDto
 import com.hancook.hancookbe.exceptions.AssociatedEntityNotFoundException
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import com.hancook.hancookbe.exceptions.EntityAlreadyAssociatedException
@@ -22,8 +24,8 @@ class CustomerOrderService(
     @Autowired private val tableRepository: TableRepository,
     @Autowired private val employeeRepository: EmployeeRepository
 ) {
-    fun findAllCustomerOrders(): List<ResponseCustomerOrderDto> {
-        return customerOrderRepository.findAll().map { it.toResponse() }
+    fun findAllCustomerOrders(): List<ResponseOrderInfoDto> {
+        return customerOrderRepository.findAll().map { it.toInfo() }
     }
 
     fun findCustomerOrderByTableId(tableId: UUID): ResponseCustomerOrderDto {

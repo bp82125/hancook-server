@@ -20,6 +20,9 @@ class Table(
 
     @OneToOne(mappedBy = "table")
     var customerOrder: CustomerOrder? = null,
+
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false
 ) {
     fun getTableState(): TableState {
         return if (customerOrder == null) TableState.AVAILABLE else TableState.OCCUPIED
@@ -30,6 +33,10 @@ class Table(
         this.customerOrder = null
     }
 
+    override fun toString(): String {
+        return "Table(id=$id, name='$name', order=$customerOrder)"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Table) return false
@@ -37,6 +44,7 @@ class Table(
         if (id != other.id) return false
         if (name != other.name) return false
         if (customerOrder != other.customerOrder) return false
+        if (deleted != other.deleted) return false
 
         return true
     }
@@ -45,10 +53,7 @@ class Table(
         var result = id?.hashCode() ?: 0
         result = 31 * result + name.hashCode()
         result = 31 * result + (customerOrder?.hashCode() ?: 0)
+        result = 31 * result + deleted.hashCode()
         return result
-    }
-
-    override fun toString(): String {
-        return "Table(id=$id, name='$name', order=$customerOrder)"
     }
 }

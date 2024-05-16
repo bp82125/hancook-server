@@ -35,7 +35,7 @@ class InvoiceService(
 
     fun createInvoice(orderId: UUID, requestInvoice: RequestInvoice): ResponseInvoice {
         val order = customerOrderRepository.findById(orderId).orElseThrow {
-            ElementNotFoundException(objectName = "Invoice", id = orderId.toString())
+            ElementNotFoundException(objectName = "Order", id = orderId.toString())
         }
 
         val employeeId = requestInvoice.employeeId
@@ -50,5 +50,12 @@ class InvoiceService(
         customerOrderRepository.deleteById(orderId)
 
         return createdInvoice.toResponse()
+    }
+
+    fun deleteInvoice(invoiceId: UUID) {
+        if(!invoiceRepository.existsById(invoiceId)){
+            throw ElementNotFoundException(objectName = "Invoice", id = invoiceId.toString())
+        }
+        invoiceRepository.deleteById(invoiceId)
     }
 }

@@ -52,8 +52,9 @@ class ChartController(
 
     @GetMapping("/dishes", "/dishes/")
     fun getDishes(
+        @RequestParam(required = false, defaultValue = "allTime") timeRange: String,
     ): ResponseEntity<ApiResponse<ResponseTop5Dish>> {
-        val dishes = chartService.countTop5DishesByCheckoutDetails()
+        val dishes = chartService.calculateTop5Dishes(timeRange)
         return ResponseEntity.ok(
             ApiResponse(
                 success = true,

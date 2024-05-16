@@ -3,10 +3,8 @@ package com.hancook.hancookbe.services
 import com.hancook.hancookbe.converters.toEntity
 import com.hancook.hancookbe.converters.toResponse
 import com.hancook.hancookbe.converters.toUserDetails
-import com.hancook.hancookbe.dtos.CreateAccountDto
-import com.hancook.hancookbe.dtos.ResponseAccountDto
-import com.hancook.hancookbe.dtos.UpdateAccountDto
-import com.hancook.hancookbe.dtos.UpdatePasswordDto
+import com.hancook.hancookbe.dtos.*
+import com.hancook.hancookbe.exceptions.DeleteAdminAccountException
 import com.hancook.hancookbe.exceptions.ElementNotFoundException
 import com.hancook.hancookbe.exceptions.InvalidPasswordException
 import com.hancook.hancookbe.exceptions.UsernameAlreadyExistsException
@@ -28,6 +26,10 @@ class AccountService (
     @Autowired private val employeeRepository: EmployeeRepository,
     @Autowired private val passwordEncoder: PasswordEncoder
 ): UserDetailsService {
+    fun adminAccountExist(): Boolean{
+        return accountRepository.existsByUsername("admin")
+    }
+
     fun findAllAccounts(): List<ResponseAccountDto> {
         return accountRepository
             .findAll()
@@ -47,7 +49,6 @@ class AccountService (
                 .findById(it)
                 .orElseThrow { ElementNotFoundException(objectName = "Employee", id = requestAccount.employeeId.toString()) }
         }
-
 
         if (accountRepository.existsByUsername(requestAccount.username)) {
             throw UsernameAlreadyExistsException("Username '${requestAccount.username}' is already taken.")
@@ -71,6 +72,10 @@ class AccountService (
             .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
             .apply { this.role = updateAccount.role }
 
+        if(account.isAdmin()){
+            throw DeleteAdminAccountException("admin")
+        }
+
         val updatedAccount = accountRepository.save(account)
         return updatedAccount.toResponse()
     }
@@ -88,10 +93,28 @@ class AccountService (
         return accountRepository.save(account).toResponse()
     }
 
+    fun resetPasswordAccount(id: UUID, resetPasswordDto: ResetPasswordDto): ResponseAccountDto {
+        val account = accountRepository
+            .findById(id)
+            .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString())
+            }
+
+        if(account.isAdmin()){
+            throw DeleteAdminAccountException("admin")
+        }
+
+        account.password = passwordEncoder.encode(resetPasswordDto.newPassword)
+        return accountRepository.save(account).toResponse()
+    }
+
     fun deleteAccount(id: UUID) {
         val account = accountRepository
             .findById(id)
             .orElseThrow { ElementNotFoundException(objectName = "Account", id = id.toString()) }
+
+        if(account.isAdmin()){
+            throw DeleteAdminAccountException("admin")
+        }
 
         account.removeEmployee()
         accountRepository.deleteById(id)

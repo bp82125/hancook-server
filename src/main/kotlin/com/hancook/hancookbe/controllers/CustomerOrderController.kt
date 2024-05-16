@@ -2,6 +2,7 @@ package com.hancook.hancookbe.controllers
 
 import com.hancook.hancookbe.dtos.RequestCustomerOrderDto
 import com.hancook.hancookbe.dtos.ResponseCustomerOrderDto
+import com.hancook.hancookbe.dtos.ResponseOrderInfoDto
 import com.hancook.hancookbe.services.CustomerOrderService
 import com.hancook.hancookbe.system.ApiResponse
 import jakarta.validation.Valid
@@ -23,7 +24,7 @@ class CustomerOrderController(
     @Autowired private val customerOrderService: CustomerOrderService
 ) {
     @GetMapping("/orders", "/orders/")
-    fun findAllCustomerOrders(): ResponseEntity<ApiResponse<List<ResponseCustomerOrderDto>>> {
+    fun findAllCustomerOrders(): ResponseEntity<ApiResponse<List<ResponseOrderInfoDto>>> {
         val orders = customerOrderService.findAllCustomerOrders()
         return ResponseEntity.ok(
             ApiResponse(
