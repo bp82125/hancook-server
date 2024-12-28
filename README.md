@@ -24,7 +24,7 @@ Check out [Hancook (Client)](https://github.com/bp82125/hancook-client)
 - A MySQL database configured and running
 ### Clone the repository
 ```bash
-git clone https://github.com/your-username/hancook-backend.git
+git clone https://github.com/bp82125/hancook-backend.git
 cd hancook-backend
 ```
 ### Set up the database
